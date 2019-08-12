@@ -1,0 +1,989 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search> 
+  
+    
+    <entry>
+      <title><![CDATA[quill富文本编辑器自定义上传图片]]></title>
+      <url>/2019/08/12/quill%E5%AF%8C%E6%96%87%E6%9C%AC%E7%BC%96%E8%BE%91%E5%99%A8%E8%87%AA%E5%AE%9A%E4%B9%89%E4%B8%8A%E4%BC%A0%E5%9B%BE%E7%89%87/</url>
+      <content type="html"><![CDATA[<contents>
+
+
+
+<h1 id="quill富文本自定义上传组件"><a href="#quill富文本自定义上传组件" class="headerlink" title="quill富文本自定义上传组件"></a>quill富文本自定义上传组件</h1><blockquote>
+<p>富文本编辑器quill在上传图片的时候会转换为base64格式，这样后端直接存图片而不是图片地址了，需要修改为存图片地址的方式,在查看github之后发现可以增加一个自定义toolbar来解决</p>
+</blockquote>
+<ol>
+<li>增加自定义的toolbar</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;quill-editor (onEditorCreated)=&quot;EditorCreated($event)&quot; [(ngModel)]=&quot;data[&apos;noticeContent&apos;]&quot; formControlName=&quot;noticeContent&quot;&gt;</div><div class="line">               &lt;div quill-editor-toolbar&gt;</div><div class="line">                   </div><div class="line">                   &lt;span class=&quot;ql-formats&quot;&gt;</div><div class="line"></div><div class="line">                       &lt;button nz-button type=&quot;button&quot; (click)=&quot;customButtonClick($event)&quot; class=&quot;ql-image&quot;&gt;imgage&lt;/button&gt;</div><div class="line">                       &lt;input class=&quot;open-file&quot; type=&quot;file&quot; name=&quot;file&quot; id=&quot;file&quot; </div><div class="line">                       accept=&quot;image/png, image/gif, image/jpeg, image/bmp, image/x-icon&quot;</div><div class="line">                       style=&quot;display: none;&quot; (change)=&quot;upload($event)&quot; multiple=&quot;false&quot;</div><div class="line">                       /&gt;</div><div class="line">                   &lt;/span&gt;</div><div class="line">                </div><div class="line"></div><div class="line">               &lt;/div&gt;</div><div class="line">           &lt;/quill-editor&gt;</div></pre></td></tr></table></figure>
+<ol>
+<li>编写customButtonClick和upload方法</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">  EditorCreated(quill) &#123;</div><div class="line">    this.editor = quill;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  customButtonClick(quill)&#123;</div><div class="line"></div><div class="line">    var range = this.editor.getSelection(true);</div><div class="line">    var  length = range.index;</div><div class="line">	//弹出文件选择框调用upload方法</div><div class="line">    this.el.nativeElement.querySelector(&apos;.open-file&apos;).click();</div><div class="line"></div><div class="line">  &#125;</div><div class="line">  </div><div class="line"></div><div class="line">  uploadImg()&#123;</div><div class="line"></div><div class="line">    this.file = [];</div><div class="line">    let imgFile=window.document.getElementById(&apos;file&apos;)[&apos;files&apos;][0];</div><div class="line">    if(imgFile==null)&#123;</div><div class="line">      return;</div><div class="line">    &#125;</div><div class="line">    this.file.push(imgFile);</div><div class="line"></div><div class="line">    if (this.file &amp;&amp; this.file !== null &amp;&amp; this.file.length&gt;=1) &#123;</div><div class="line">	 //上传图片</div><div class="line">      this.service.imageUpload(this.file).subscribe(res =&gt; &#123;</div><div class="line">        if (res[&apos;body&apos;]) &#123;</div><div class="line">          if (res[&apos;body&apos;][&apos;resCode&apos;] === 20000) &#123;</div><div class="line">            let imgUrl=res[&apos;body&apos;][&apos;data&apos;][0]</div><div class="line">            if(imgUrl!=null)&#123;</div><div class="line">              this.editor.insertEmbed(length, &apos;image&apos;,imgUrl);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">          &#125;else &#123;</div><div class="line">            this.message.create(&apos;error&apos;, res[&apos;body&apos;][&apos;resCode&apos;]);</div><div class="line">        &#125;</div><div class="line">      &#125;</div><div class="line">    &#125;)</div><div class="line"></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<ol>
+<li>参考资料<blockquote>
+<p><a href="https://github.com/surmon-china/vue-quill-editor/issues/21" target="_blank" rel="external">https://github.com/surmon-china/vue-quill-editor/issues/21</a><br><a href="https://github.com/surmon-china/vue-quill-editor/blob/master/examples/03-example.vue#L34" target="_blank" rel="external">https://github.com/surmon-china/vue-quill-editor/blob/master/examples/03-example.vue#L34</a></p>
+</blockquote>
+</li>
+</ol>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 前端 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> quill </tag>
+            
+            <tag> angular </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[SpringBoot WebSocket使用]]></title>
+      <url>/2019/08/12/SpringBoot-WebSocket%E4%BD%BF%E7%94%A8/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="spring-boot-webScoket使用"><a href="#spring-boot-webScoket使用" class="headerlink" title="spring boot webScoket使用"></a>spring boot webScoket使用</h2><h3 id="1-pom文件配置"><a href="#1-pom文件配置" class="headerlink" title="1.pom文件配置"></a>1.pom文件配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">       &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</div><div class="line">       &lt;artifactId&gt;spring-boot-starter-websocket&lt;/artifactId&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<h3 id="2-webSocket-bean配置"><a href="#2-webSocket-bean配置" class="headerlink" title="2.webSocket bean配置"></a>2.webSocket bean配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">@Configuration</div><div class="line">@EnableWebSocket</div><div class="line">public class CafeWebSocketConfig implements WebSocketConfigurer &#123;</div><div class="line">    @Override</div><div class="line">    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) &#123;</div><div class="line">        //websocket 切点url</div><div class="line">        registry.addHandler(CafeWebSocketHandler(), &quot;/cafeWebSocket&quot;)</div><div class="line">                .addInterceptors(CafeHandshakeInterceptor());</div><div class="line">        //如果有跨域的情况,需要加入</div><div class="line">        setAllowedOrigins(&quot;*&quot;);</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //注入处理逻辑</div><div class="line">    @Bean</div><div class="line">    public WebSocketHandler CafeWebSocketHandler() &#123;</div><div class="line">        return new CafeWebSocketHandler();</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //注入拦截器</div><div class="line">    @Bean</div><div class="line">    public HandshakeInterceptor CafeHandshakeInterceptor() &#123;</div><div class="line">        return new CafeHandshakeInterceptor();</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="3-webSocket拦截器配置"><a href="#3-webSocket拦截器配置" class="headerlink" title="3.webSocket拦截器配置"></a>3.webSocket拦截器配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">//实现HandshakeInterceptor接口</div><div class="line">public class CafeHandshakeInterceptor implements HandshakeInterceptor &#123;</div><div class="line">    //权限url</div><div class="line">    private static final String PERMISSION=&quot;/webSocketUrl&quot;;</div><div class="line">    </div><div class="line">    //握手之前调用</div><div class="line">    //权限判断</div><div class="line">    @Override</div><div class="line">    public boolean beforeHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Map&lt;String, Object&gt; map) throws Exception &#123;</div><div class="line">        ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) serverHttpRequest;</div><div class="line"></div><div class="line">        //获取用户</div><div class="line">        boolean user = ShiroKit.isUser();</div><div class="line">        if(!user)&#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">        //获取权限</div><div class="line">        //判断是否有webSocket权限</div><div class="line">        boolean permisson = ShiroKit.hasPermission(PERMISSION);</div><div class="line">        if(!permisson)&#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line">        //把账号信息放到webSocketSession中</div><div class="line">        map.put(WEBSOCKET_ACCOUNT,ShiroKit.getUser().getAccount());</div><div class="line">        return true;</div><div class="line">    &#125;</div><div class="line">    //握手之后调用</div><div class="line">    @Override</div><div class="line">    public void afterHandshake(ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse, WebSocketHandler webSocketHandler, Exception e) &#123;</div><div class="line">        logger.info(ShiroKit.getUser().getAccount()+&quot;,成功连接cafeWebSocket...&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="4-webSocket消息处理器"><a href="#4-webSocket消息处理器" class="headerlink" title="4.webSocket消息处理器"></a>4.webSocket消息处理器</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line">@Component</div><div class="line">public class CafeWebSocketHandler extends TextWebSocketHandler &#123;</div><div class="line">    //全局session,可以存所有用户的session,但是不支持分布式</div><div class="line">    private final static CopyOnWriteArraySet&lt;WebSocketSession&gt; sessions = new CopyOnWriteArraySet&lt;&gt;();</div><div class="line">   </div><div class="line">   //在WebSocket协商成功后调用，并且打开WebSocket连接准备使用</div><div class="line">    @Override</div><div class="line">    public void afterConnectionEstablished(WebSocketSession session) throws Exception &#123;</div><div class="line">        super.afterConnectionEstablished(session);</div><div class="line">        sessions.add(session);</div><div class="line"></div><div class="line">        logger.info(&quot;【WebSocket】有新的连接, sessionId:&#123;&#125;,account:&#123;&#125;,总数:&#123;&#125;&quot;,</div><div class="line">                session.getId(), (String) session.getAttributes().get(WEBSOCKET_ACCOUNT), sessions.size());</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //关闭webSocket连接</div><div class="line">    @Override</div><div class="line">    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception &#123;</div><div class="line">        super.afterConnectionClosed(session, status);</div><div class="line">        sessions.remove(session);</div><div class="line">        logger.info(&quot;【WebSocket】连接断开, sessionId:&#123;&#125;,userName:&#123;&#125;,总数:&#123;&#125;&quot;,</div><div class="line">                session.getId(), (String) session.getAttributes().get(WEBSOCKET_ACCOUNT), sessions.size());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //发送消息</div><div class="line">    @Override</div><div class="line">    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception &#123;</div><div class="line">        super.handleTextMessage(session, message);</div><div class="line">        session.sendMessage(message);</div><div class="line">    &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="5-前端配置"><a href="#5-前端配置" class="headerlink" title="5.前端配置"></a>5.前端配置</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">getWebSocket = function () &#123;</div><div class="line">    var webSocket = null;</div><div class="line">    var heartBeatMessage=&quot;HeartBeat&quot;;</div><div class="line">    if(&apos;WebSocket&apos; in window)&#123;</div><div class="line">        if(window.location.protocol===&quot;https:&quot;)&#123;</div><div class="line">            webSocket = new WebSocket(&apos;wss://&apos;+window.location.host+&apos;/webSocket&apos;);</div><div class="line">        &#125;else&#123;</div><div class="line">            webSocket = new WebSocket(&apos;ws://&apos;+window.location.host+&apos;/webSocket&apos;);</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;else&#123;</div><div class="line">        console.log(&quot;该浏览器不支持WebSocket!!!&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    webSocket.onopen = function (event) &#123;</div><div class="line">        heartCheck.start();</div><div class="line">        console.log(&quot;建立连接&quot;);</div><div class="line">      </div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    webSocket.onclose = function (event) &#123;</div><div class="line">        console.log(&quot;断开连接&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    webSocket.onmessage = function (event) &#123;</div><div class="line">        heartCheck.reset();</div><div class="line">        if(event.data==&apos;&apos;|| event.data==undefined ||</div><div class="line">            event.data==heartBeatMessage)&#123;</div><div class="line">            return;</div><div class="line">        &#125;</div><div class="line">        //获取数据</div><div class="line">        var jsObject = JSON.parse(event.data);</div><div class="line">     </div><div class="line">    &#125;</div><div class="line"></div><div class="line">    webSocket.onerror = function (event) &#123;</div><div class="line">        console.log(&quot;websocket通信发生错误!!!&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    window.onbeforeunload = function (event) &#123;</div><div class="line">        webSocket.close();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    //心跳检测</div><div class="line">    var heartCheck=&#123;</div><div class="line">        timeout: 58*1000,//58s</div><div class="line">        timeoutObj: null,</div><div class="line">        reset: function()&#123;</div><div class="line">            clearTimeout(this.timeoutObj);</div><div class="line">            this.start();</div><div class="line">        &#125;,</div><div class="line">        start: function()&#123;</div><div class="line">            this.timeoutObj = setTimeout(function()&#123;</div><div class="line">                webSocket.send(&quot;HeartBeat&quot;);</div><div class="line">            &#125;, this.timeout)</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> SpringBoot </category>
+            
+        </categories>
+        
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[SpringBoot事务解析]]></title>
+      <url>/2019/08/12/SpringBoot%E4%BA%8B%E5%8A%A1%E8%A7%A3%E6%9E%90/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="SpringBoot事务详解"><a href="#SpringBoot事务详解" class="headerlink" title="SpringBoot事务详解"></a>SpringBoot事务详解</h2><blockquote>
+<p>SpringBoot-2.1.3.RELEASE版本事务解析</p>
+</blockquote>
+<h3 id="1-spring事务猜想"><a href="#1-spring事务猜想" class="headerlink" title="1.spring事务猜想"></a>1.spring事务猜想</h3><blockquote>
+<p>使用切面再方法执行前开启事务，执行完提交事务，如果有异常，则回滚事务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">## Mysql事务流程</div><div class="line"></div><div class="line">##1.开启事务</div><div class="line">begin; </div><div class="line">##2.提交事务</div><div class="line">commit;</div><div class="line">##3.如果有异常需要回滚事务</div><div class="line">rollback；</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// jdbc使用事务流程</span></div><div class="line"></div><div class="line"><span class="comment">//1.获取连接</span></div><div class="line">Connection conn = DataSourceUtils.getConnection();</div><div class="line"><span class="comment">//2.开启事务</span></div><div class="line">conn.setAutoCommit(<span class="keyword">false</span>);</div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="comment">//3.执行业务sql操作</span></div><div class="line">   	doSomething(conn);</div><div class="line">    <span class="comment">//4.提交事务</span></div><div class="line">    conn.commit();</div><div class="line">&#125;<span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">    <span class="comment">//回滚事务</span></div><div class="line">    conn.rollback();</div><div class="line">&#125;<span class="keyword">finally</span> &#123;</div><div class="line">    conn.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="2-spring注解-transactional"><a href="#2-spring注解-transactional" class="headerlink" title="2.spring注解@transactional"></a>2.spring注解@transactional</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Transactional &#123;</div><div class="line">    <span class="comment">//当在配置文件中有多个 TransactionManager , 可以用该属性指定选择哪个事务管理器</span></div><div class="line">    <span class="meta">@AliasFor</span>(<span class="string">"transactionManager"</span>)</div><div class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</div><div class="line"></div><div class="line">    <span class="meta">@AliasFor</span>(<span class="string">"value"</span>)</div><div class="line">    <span class="function">String <span class="title">transactionManager</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</div><div class="line">	<span class="comment">//事务传播机制</span></div><div class="line">    <span class="function">Propagation <span class="title">propagation</span><span class="params">()</span> <span class="keyword">default</span> Propagation.REQUIRED</span>;</div><div class="line">	<span class="comment">//事务隔离级别</span></div><div class="line">    <span class="function">Isolation <span class="title">isolation</span><span class="params">()</span> <span class="keyword">default</span> Isolation.DEFAULT</span>;</div><div class="line">	<span class="comment">//超时时间</span></div><div class="line">    <span class="comment">//如果超过该时间限制但事务还没有完成，则自动回滚事务。</span></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">timeout</span><span class="params">()</span> <span class="keyword">default</span> -1</span>;</div><div class="line">	<span class="comment">//事务只读</span></div><div class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">readOnly</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</div><div class="line">	<span class="comment">//用于指定能够触发事务回滚的异常类型，如果有多个异常类型需要指定，各类型之间可以通过逗号分隔</span></div><div class="line">    Class&lt;? extends Throwable&gt;[] rollbackFor() <span class="keyword">default</span> &#123;&#125;;</div><div class="line"></div><div class="line">    String[] rollbackForClassName() <span class="keyword">default</span> &#123;&#125;;</div><div class="line">	<span class="comment">//抛出 no-rollback-for 指定的异常类型，不回滚事务。</span></div><div class="line">    Class&lt;? extends Throwable&gt;[] noRollbackFor() <span class="keyword">default</span> &#123;&#125;;</div><div class="line"></div><div class="line">    String[] noRollbackForClassName() <span class="keyword">default</span> &#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="3-spring执行-transactional"><a href="#3-spring执行-transactional" class="headerlink" title="3.spring执行@transactional"></a>3.spring执行@transactional</h4><blockquote>
+<p>一个事务方法执行流程</p>
+</blockquote>
+<ul>
+<li><p>获取事务属性</p>
+</li>
+<li><p>获取事务管理器</p>
+</li>
+<li><p>获取需要事务的方法名称/获取该方法上事务的信息</p>
+</li>
+<li><p>目标方法执行</p>
+</li>
+<li><p>清除事务信息</p>
+</li>
+<li><p>事务回滚</p>
+</li>
+<li><p>事务提交</p>
+</li>
+</ul>
+<blockquote>
+<p>事务执行方法TransactionAspectSupport</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionAspectSupport</span> <span class="keyword">implements</span> <span class="title">BeanFactoryAware</span>, <span class="title">InitializingBean</span> </span>&#123;</div><div class="line">   <span class="meta">@Nullable</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Object <span class="title">invokeWithinTransaction</span><span class="params">(Method method, @Nullable Class&lt;?&gt; targetClass, TransactionAspectSupport.InvocationCallback invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">        <span class="comment">// 读取事务的属性和设置</span></div><div class="line">        TransactionAttributeSource tas = <span class="keyword">this</span>.getTransactionAttributeSource();</div><div class="line">        TransactionAttribute txAttr = tas != <span class="keyword">null</span> ? tas.getTransactionAttribute(method, targetClass) : <span class="keyword">null</span>;</div><div class="line">        <span class="comment">// 获取 beanFactory 中的 transactionManager</span></div><div class="line">        PlatformTransactionManager tm = <span class="keyword">this</span>.determineTransactionManager(txAttr);</div><div class="line">        String joinpointIdentification = <span class="keyword">this</span>.methodIdentification(method, targetClass, txAttr);</div><div class="line">        Object result;</div><div class="line">        <span class="comment">//编程式事务（需要加入处理事务逻辑，需要显示调用事务方法）</span></div><div class="line">        <span class="keyword">if</span> (txAttr != <span class="keyword">null</span> &amp;&amp; tm <span class="keyword">instanceof</span> CallbackPreferringPlatformTransactionManager) &#123;</div><div class="line">            TransactionAspectSupport.ThrowableHolder throwableHolder = <span class="keyword">new</span> TransactionAspectSupport.ThrowableHolder();</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                result = ((CallbackPreferringPlatformTransactionManager)tm).execute(txAttr, (status) -&gt; &#123;</div><div class="line">                   </div><div class="line">                    TransactionAspectSupport.TransactionInfo txInfo = <span class="keyword">this</span>.prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);</div><div class="line"></div><div class="line">                    Object var9;</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        <span class="comment">//目标方法执行</span></div><div class="line">                        Object var8 = invocation.proceedWithInvocation();</div><div class="line">                        <span class="keyword">return</span> var8;</div><div class="line">                    &#125; <span class="keyword">catch</span> (Throwable var13) &#123;</div><div class="line">                        <span class="keyword">if</span> (txAttr.rollbackOn(var13)) &#123;</div><div class="line">                            <span class="keyword">if</span> (var13 <span class="keyword">instanceof</span> RuntimeException) &#123;</div><div class="line">                                <span class="keyword">throw</span> (RuntimeException)var13;</div><div class="line">                            &#125;</div><div class="line"></div><div class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> TransactionAspectSupport.ThrowableHolderException(var13);</div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                        throwableHolder.throwable = var13;</div><div class="line">                        var9 = <span class="keyword">null</span>;</div><div class="line">                    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                        <span class="comment">//清除事务信息</span></div><div class="line">                        <span class="keyword">this</span>.cleanupTransactionInfo(txInfo);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="keyword">return</span> var9;</div><div class="line">                &#125;);</div><div class="line">                <span class="keyword">if</span> (throwableHolder.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">throw</span> throwableHolder.throwable;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="keyword">return</span> result;</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">catch</span> (TransactionAspectSupport.ThrowableHolderException var19) &#123;</div><div class="line">                <span class="keyword">throw</span> var19.getCause();</div><div class="line">            &#125; <span class="keyword">catch</span> (TransactionSystemException var20) &#123;</div><div class="line">                <span class="keyword">if</span> (throwableHolder.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.error(<span class="string">"Application exception overridden by commit exception"</span>, throwableHolder.throwable);</div><div class="line">                    var20.initApplicationException(throwableHolder.throwable);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">throw</span> var20;</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable var21) &#123;</div><div class="line">                <span class="keyword">if</span> (throwableHolder.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.error(<span class="string">"Application exception overridden by commit exception"</span>, throwableHolder.throwable);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">throw</span> var21;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// 声明式事务</span></div><div class="line">            <span class="comment">// 构建事务相关信息</span></div><div class="line">            TransactionAspectSupport.TransactionInfo txInfo = <span class="keyword">this</span>.createTransactionIfNecessary(tm, txAttr, joinpointIdentification);</div><div class="line">            result = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                result = invocation.proceedWithInvocation();</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable var17) &#123;</div><div class="line">               <span class="comment">// 如果出现异常，则进行回滚</span></div><div class="line">                <span class="keyword">this</span>.completeTransactionAfterThrowing(txInfo, var17);</div><div class="line">                <span class="keyword">throw</span> var17;</div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                <span class="keyword">this</span>.cleanupTransactionInfo(txInfo);</div><div class="line">            &#125;</div><div class="line">			 <span class="comment">// 这里通过事务处理器来对事务进行提交</span></div><div class="line">            <span class="keyword">this</span>.commitTransactionAfterReturning(txInfo);</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        &#125;</div><div class="line">    &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="4-spring事务常量"><a href="#4-spring事务常量" class="headerlink" title="4.spring事务常量"></a>4.spring事务常量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionDefinition</span> </span>&#123;</div><div class="line">	<span class="comment">//传播性</span></div><div class="line">    </div><div class="line">	<span class="comment">//如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。默认为这个</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_REQUIRED = <span class="number">0</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//支持当前事务，如果当前没有事务，就以非事务方式执行</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_SUPPORTS = <span class="number">1</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//使用当前的事务，如果当前没有事务，就抛出异常。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_MANDATORY = <span class="number">2</span>;</div><div class="line">    </div><div class="line">	<span class="comment">//新建事务，如果当前存在事务，把当前事务挂起。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_REQUIRES_NEW = <span class="number">3</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_NOT_SUPPORTED = <span class="number">4</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//以非事务方式执行，如果当前存在事务，则抛出异常。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_NEVER = <span class="number">5</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与PROPAGATION_REQUIRED类似的操作</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_NESTED = <span class="number">6</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//隔离级别</span></div><div class="line">    <span class="comment">//使用数据库默认的隔离级别-可重复读的</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_DEFAULT = -<span class="number">1</span>;</div><div class="line">    <span class="comment">//允许读取尚未提交的更改。可能导致脏读、幻影读或不可重复读</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_READ_UNCOMMITTED = <span class="number">1</span>;</div><div class="line">    <span class="comment">//允许从已经提交的并发事务读取。可防止脏读，但幻影读和不可重复读仍可能会发生。</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_READ_COMMITTED = <span class="number">2</span>;</div><div class="line">    <span class="comment">//对相同字段的多次读取的结果是一致的，除非数据被当前事务本身改变。可防止脏读和不可重复读，但幻影读仍可能发生</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_REPEATABLE_READ = <span class="number">4</span>;</div><div class="line">    <span class="comment">//完全服从ACID的隔离级别，确保不发生脏读、不可重复读和幻影读。这在所有隔离级别中也是最慢的，因为它通常是通过完全锁定当前事务所涉及的数据表来完成的。</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_SERIALIZABLE = <span class="number">8</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="5-spring事务管理接口"><a href="#5-spring事务管理接口" class="headerlink" title="5. spring事务管理接口"></a>5. spring事务管理接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//平台事务管理接口</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>&#123;</div><div class="line">    <span class="comment">//获取事务状态</span></div><div class="line">    <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(@Nullable TransactionDefinition var1)</span> <span class="keyword">throws</span> TransactionException</span>;</div><div class="line">	<span class="comment">//提交事务</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</div><div class="line">	<span class="comment">//回滚事务</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="6-事务状态TransactionStatus"><a href="#6-事务状态TransactionStatus" class="headerlink" title="6.事务状态TransactionStatus"></a>6.事务状态TransactionStatus</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultTransactionStatus</span> <span class="keyword">extends</span> <span class="title">AbstractTransactionStatus</span> </span>&#123;</div><div class="line">   </div><div class="line">    <span class="meta">@Nullable</span></div><div class="line">    <span class="comment">// 事务连接器</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object transaction;</div><div class="line">    <span class="comment">// 是否是新事务</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> newTransaction;</div><div class="line">    <span class="comment">// 是否开启 事务同步器</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> newSynchronization;</div><div class="line">    <span class="comment">// 这个事务是否是 readOnly</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> readOnly;</div><div class="line">    <span class="comment">//是否debug模式</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> debug;</div><div class="line">    <span class="meta">@Nullable</span></div><div class="line">    <span class="comment">//事务是否需要挂起</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object suspendedResources;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="7-spring事务管理实现类-AbstractPlatformTransactionManager"><a href="#7-spring事务管理实现类-AbstractPlatformTransactionManager" class="headerlink" title="7.spring事务管理实现类 -AbstractPlatformTransactionManager"></a>7.spring事务管理实现类 -AbstractPlatformTransactionManager</h3><ul>
+<li>getTransaction()方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> TransactionStatus <span class="title">getTransaction</span><span class="params">(@Nullable TransactionDefinition definition)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">        Object transaction = <span class="keyword">this</span>.doGetTransaction();</div><div class="line">        <span class="keyword">boolean</span> debugEnabled = <span class="keyword">this</span>.logger.isDebugEnabled();</div><div class="line">        <span class="keyword">if</span> (definition == <span class="keyword">null</span>) &#123;</div><div class="line">            definition = <span class="keyword">new</span> DefaultTransactionDefinition();</div><div class="line">        &#125;</div><div class="line">		<span class="comment">// 如果当前已经存在事务</span></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.isExistingTransaction(transaction)) &#123;</div><div class="line">            <span class="comment">// 根据不同传播机制不同处理</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.handleExistingTransaction((TransactionDefinition)definition, transaction, debugEnabled);</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (((TransactionDefinition)definition).getTimeout() &lt; -<span class="number">1</span>) &#123;</div><div class="line">            <span class="comment">// 超时不能小于-1</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> InvalidTimeoutException(<span class="string">"Invalid transaction timeout"</span>, ((TransactionDefinition)definition).getTimeout());</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (((TransactionDefinition)definition).getPropagationBehavior() == <span class="number">2</span>) &#123;</div><div class="line">           <span class="comment">// 当前不存在事务，传播机制=MANDATORY（支持当前事务，没事务报错），报错</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"No existing transaction found for transaction marked with propagation 'mandatory'"</span>);</div><div class="line">        &#125; </div><div class="line">    <span class="comment">//// 当前不存在事务，传播机制=REQUIRED/REQUIRED_NEW/NESTED,这三种情况，需要新开启事务，且加上事务同步</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (((TransactionDefinition)definition).getPropagationBehavior() != <span class="number">0</span> &amp;&amp; ((TransactionDefinition)definition).getPropagationBehavior() != <span class="number">3</span> &amp;&amp; ((TransactionDefinition)definition).getPropagationBehavior() != <span class="number">6</span>) &#123;</div><div class="line">        <span class="comment">//事务隔离级别不是默认的</span></div><div class="line">            <span class="keyword">if</span> (((TransactionDefinition)definition).getIsolationLevel() != -<span class="number">1</span> &amp;&amp; <span class="keyword">this</span>.logger.isWarnEnabled()) &#123;</div><div class="line">                <span class="keyword">this</span>.logger.warn(<span class="string">"Custom isolation level specified but no actual transaction initiated; isolation level will effectively be ignored: "</span> + definition);</div><div class="line">            &#125;</div><div class="line">			<span class="comment">//是否需要新开启同步</span></div><div class="line">            <span class="keyword">boolean</span> newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() == <span class="number">0</span>;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.prepareTransactionStatus((TransactionDefinition)definition, (Object)<span class="keyword">null</span>, <span class="keyword">true</span>, newSynchronization, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            AbstractPlatformTransactionManager.SuspendedResourcesHolder suspendedResources = <span class="keyword">this</span>.suspend((Object)<span class="keyword">null</span>);</div><div class="line">            <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                <span class="keyword">this</span>.logger.debug(<span class="string">"Creating new transaction with name ["</span> + ((TransactionDefinition)definition).getName() + <span class="string">"]: "</span> + definition);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                </div><div class="line">                <span class="comment">//public static final int SYNCHRONIZATION_NEVER = 2;</span></div><div class="line"> 				<span class="comment">//2的含义：永不开启同步              </span></div><div class="line">                <span class="keyword">boolean</span> newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;</div><div class="line">                DefaultTransactionStatus status = <span class="keyword">this</span>.newTransactionStatus((TransactionDefinition)definition, transaction, <span class="keyword">true</span>, newSynchronization, debugEnabled, suspendedResources);</div><div class="line">                <span class="comment">// 开启新事务</span></div><div class="line">                <span class="keyword">this</span>.doBegin(transaction, (TransactionDefinition)definition);</div><div class="line">                <span class="comment">//预备同步</span></div><div class="line">                <span class="keyword">this</span>.prepareSynchronization(status, (TransactionDefinition)definition);</div><div class="line">                <span class="keyword">return</span> status;</div><div class="line">            &#125; <span class="keyword">catch</span> (Error | RuntimeException var7) &#123;</div><div class="line">                <span class="keyword">this</span>.resume((Object)<span class="keyword">null</span>, suspendedResources);</div><div class="line">                <span class="keyword">throw</span> var7;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>handleExistingTransaction存在事务之后处理方法(根据事务传播级别)</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> TransactionStatus <span class="title">handleExistingTransaction</span><span class="params">(TransactionDefinition definition, Object transaction, <span class="keyword">boolean</span> debugEnabled)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">    <span class="comment">// 如果当前已经存在事务, 且当前事务的传播属性设置为 PROPAGATION_NEVER（5）, 那么抛出异常    </span></div><div class="line">    <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">5</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"Existing transaction found for transaction marked with propagation 'never'"</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            AbstractPlatformTransactionManager.SuspendedResourcesHolder suspendedResources;</div><div class="line">            <span class="keyword">boolean</span> newSynchronization;</div><div class="line">        </div><div class="line">        <span class="comment">// 如果当前事务的配置属性是 PROPAGATION_NOT_SUPPORTED（4）, 同时当前线程已经存在事务了, 那么将事务挂起</span></div><div class="line">            <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">4</span>) &#123;</div><div class="line">                <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.debug(<span class="string">"Suspending current transaction"</span>);</div><div class="line">                &#125;</div><div class="line">				<span class="comment">// 将事务的挂起</span></div><div class="line">                suspendedResources = <span class="keyword">this</span>.suspend(transaction);</div><div class="line">                <span class="comment">// 是否开启一个新的事务同步器</span></div><div class="line">                newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() == <span class="number">0</span>;</div><div class="line">                <span class="comment">//// 意味着事务方法不需要放在事务环境中执行, 同时挂起事务的信息保存在 TransactionStatus 中, 用ThreadLocal来记录</span></div><div class="line">                <span class="keyword">return</span> <span class="keyword">this</span>.prepareTransactionStatus(definition, (Object)<span class="keyword">null</span>, <span class="keyword">false</span>, newSynchronization, debugEnabled, suspendedResources);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">3</span>) &#123;</div><div class="line">                <span class="comment">// 如果当前事务的配置属性是 PROPAGATION_REQUIRES_NEW（3）, 创建新事务, 同时将当前线程存在的事务挂起, 与创建全新事务的过程类是, 区别在于在创建全新事务时不用考虑已有事务的挂起, 但在这里, 需要考虑已有事务的挂起</span></div><div class="line">                <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.debug(<span class="string">"Suspending current transaction, creating new transaction with name ["</span> + definition.getName() + <span class="string">"]"</span>);</div><div class="line">                &#125;</div><div class="line">				<span class="comment">//挂起事务</span></div><div class="line">                suspendedResources = <span class="keyword">this</span>.suspend(transaction);</div><div class="line"></div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    <span class="comment">// 是否开启一个新的事务同步器</span></div><div class="line">                    newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;</div><div class="line">                    <span class="comment">//  挂起事务的信息记录保存在 TransactionStatus 中,</span></div><div class="line">                    DefaultTransactionStatus status = <span class="keyword">this</span>.newTransactionStatus(definition, transaction, <span class="keyword">true</span>, newSynchronization, debugEnabled, suspendedResources);</div><div class="line">                    <span class="comment">// 构造 transaction, 包括设置 ConnectionHolder, 隔离级别, timeout, 如果是新连接, 绑定到当前线程</span></div><div class="line">                    <span class="keyword">this</span>.doBegin(transaction, definition);</div><div class="line">                    <span class="comment">// 新同步事务的设置, 针对当前线程的设置</span></div><div class="line">                    <span class="keyword">this</span>.prepareSynchronization(status, definition);</div><div class="line">                    <span class="keyword">return</span> status;</div><div class="line">                &#125; <span class="keyword">catch</span> (Error | RuntimeException var7) &#123;</div><div class="line">                    <span class="comment">// 抛出异常，恢复刚才挂起的事务</span></div><div class="line">                    <span class="keyword">this</span>.resumeAfterBeginException(transaction, suspendedResources, var7);</div><div class="line">                    <span class="keyword">throw</span> var7;</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">               </div><div class="line">                <span class="keyword">boolean</span> newSynchronization;</div><div class="line">                <span class="comment">// 如果当前事务的配置属性是 PROPAGATION_NOT_SUPPORTED（6）嵌套事务，创建 TransactionStatus, 创建保存点</span></div><div class="line">                <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">6</span>) &#123;</div><div class="line">                    <span class="keyword">if</span> (!<span class="keyword">this</span>.isNestedTransactionAllowed()) &#123;</div><div class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> NestedTransactionNotSupportedException(<span class="string">"Transaction manager does not allow nested transactions by default - specify 'nestedTransactionAllowed' property with value 'true'"</span>);</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                            <span class="keyword">this</span>.logger.debug(<span class="string">"Creating nested transaction with name ["</span> + definition.getName() + <span class="string">"]"</span>);</div><div class="line">                        &#125;</div><div class="line">						<span class="comment">// 如果没有可以使用保存点的方式控制事务回滚, 那么在嵌套式事务的建立初始建立保存点</span></div><div class="line">                        <span class="keyword">if</span> (<span class="keyword">this</span>.useSavepointForNestedTransaction()) &#123;</div><div class="line">                            <span class="comment">// 在 Spring 管理的事务中, 创建事务保存点</span></div><div class="line">                            DefaultTransactionStatus status = <span class="keyword">this</span>.prepareTransactionStatus(definition, transaction, <span class="keyword">false</span>, <span class="keyword">false</span>, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">                            status.createAndHoldSavepoint();</div><div class="line">                            <span class="keyword">return</span> status;</div><div class="line">                        &#125; <span class="keyword">else</span> </div><div class="line">                            <span class="comment">// 有些情况是不能使用保存点操作, 比如 JTA, 那么就建立新事务</span></div><div class="line">                            newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;							</div><div class="line">                            DefaultTransactionStatus status = <span class="keyword">this</span>.newTransactionStatus(definition, transaction, <span class="keyword">true</span>, newSynchronization, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">                            <span class="keyword">this</span>.doBegin(transaction, definition);</div><div class="line">                            <span class="keyword">this</span>.prepareSynchronization(status, definition);</div><div class="line">                            <span class="keyword">return</span> status;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                        <span class="keyword">this</span>.logger.debug(<span class="string">"Participating in existing transaction"</span>);</div><div class="line">                    &#125;</div><div class="line">					<span class="comment">// 对已经存在的事务的属性进行校验</span></div><div class="line">                    <span class="keyword">if</span> (<span class="keyword">this</span>.isValidateExistingTransaction()) &#123;</div><div class="line">                        <span class="comment">// 隔离级别的校验,TransactionDefinition 与 TransactionSynchronizationManager 中的值是否一致</span></div><div class="line">                        <span class="keyword">if</span> (definition.getIsolationLevel() != -<span class="number">1</span>) &#123;</div><div class="line">                            Integer currentIsolationLevel = TransactionSynchronizationManager.getCurrentTransactionIsolationLevel();</div><div class="line">                            <span class="keyword">if</span> (currentIsolationLevel == <span class="keyword">null</span> || currentIsolationLevel != definition.getIsolationLevel()) &#123;</div><div class="line">                                Constants isoConstants = DefaultTransactionDefinition.constants;</div><div class="line">                                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"Participating transaction with definition ["</span> + definition + <span class="string">"] specifies isolation level which is incompatible with existing transaction: "</span> + (currentIsolationLevel != <span class="keyword">null</span> ? isoConstants.toCode(currentIsolationLevel, <span class="string">"ISOLATION_"</span>) : <span class="string">"(unknown)"</span>));</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">						<span class="comment">// readOnly 的校验 </span></div><div class="line">                        <span class="keyword">if</span> (!definition.isReadOnly() &amp;&amp; TransactionSynchronizationManager.isCurrentTransactionReadOnly()) &#123;</div><div class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"Participating transaction with definition ["</span> + definition + <span class="string">"] is not marked as read-only but existing transaction is"</span>);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;</div><div class="line">                   <span class="comment">// 返回 TransactionStatus 注意第三个参数 false 表示 当前事务没有使用新事务</span></div><div class="line">                    <span class="keyword">return</span> <span class="keyword">this</span>.prepareTransactionStatus(definition, transaction, <span class="keyword">false</span>, newSynchronization, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>提交事务方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processCommit</span><span class="params">(DefaultTransactionStatus status)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">       <span class="keyword">try</span> &#123;</div><div class="line">           <span class="keyword">boolean</span> beforeCompletionInvoked = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="keyword">boolean</span> unexpectedRollback = <span class="keyword">false</span>;</div><div class="line">               <span class="keyword">this</span>.prepareForCommit(status);</div><div class="line">               <span class="keyword">this</span>.triggerBeforeCommit(status);</div><div class="line">               <span class="keyword">this</span>.triggerBeforeCompletion(status);</div><div class="line">               beforeCompletionInvoked = <span class="keyword">true</span>;</div><div class="line">               </div><div class="line">               <span class="comment">// 如果有保存点（嵌套事务），清除保存点信息</span></div><div class="line">               <span class="keyword">if</span> (status.hasSavepoint()) &#123;</div><div class="line">                   <span class="keyword">if</span> (status.isDebug()) &#123;</div><div class="line">                       <span class="keyword">this</span>.logger.debug(<span class="string">"Releasing transaction savepoint"</span>);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   unexpectedRollback = status.isGlobalRollbackOnly();</div><div class="line">                   <span class="comment">//清除保存点信息</span></div><div class="line">                   status.releaseHeldSavepoint();</div><div class="line">               &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status.isNewTransaction()) &#123;</div><div class="line">                   <span class="comment">// 若是新事务, 则直接提交</span></div><div class="line">                   <span class="keyword">if</span> (status.isDebug()) &#123;</div><div class="line">                       <span class="keyword">this</span>.logger.debug(<span class="string">"Initiating transaction commit"</span>);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   unexpectedRollback = status.isGlobalRollbackOnly();</div><div class="line">                   <span class="comment">//提交</span></div><div class="line">                   <span class="keyword">this</span>.doCommit(status);</div><div class="line">               &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.isFailEarlyOnGlobalRollbackOnly()) &#123;</div><div class="line">                   unexpectedRollback = status.isGlobalRollbackOnly();</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">if</span> (unexpectedRollback) &#123;</div><div class="line">                   <span class="keyword">throw</span> <span class="keyword">new</span> UnexpectedRollbackException(<span class="string">"Transaction silently rolled back because it has been marked as rollback-only"</span>);</div><div class="line">               &#125;</div><div class="line">           &#125; <span class="keyword">catch</span> (UnexpectedRollbackException var17) &#123;</div><div class="line">               <span class="keyword">this</span>.triggerAfterCompletion(status, <span class="number">1</span>);</div><div class="line">               <span class="keyword">throw</span> var17;</div><div class="line">           &#125; <span class="keyword">catch</span> (TransactionException var18) &#123;</div><div class="line">               <span class="keyword">if</span> (<span class="keyword">this</span>.isRollbackOnCommitFailure()) &#123;</div><div class="line">                   <span class="comment">//回滚</span></div><div class="line">                   <span class="keyword">this</span>.doRollbackOnCommitException(status, var18);</div><div class="line">               &#125; <span class="keyword">else</span> &#123;</div><div class="line">                   <span class="keyword">this</span>.triggerAfterCompletion(status, <span class="number">2</span>);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">throw</span> var18;</div><div class="line">           &#125; <span class="keyword">catch</span> (Error | RuntimeException var19) &#123;</div><div class="line">               <span class="keyword">if</span> (!beforeCompletionInvoked) &#123;</div><div class="line">                   <span class="keyword">this</span>.triggerBeforeCompletion(status);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">this</span>.doRollbackOnCommitException(status, var19);</div><div class="line">               <span class="keyword">throw</span> var19;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="keyword">this</span>.triggerAfterCommit(status);</div><div class="line">           &#125; <span class="keyword">finally</span> &#123;</div><div class="line">               <span class="keyword">this</span>.triggerAfterCompletion(status, <span class="number">0</span>);</div><div class="line">           &#125;</div><div class="line">       &#125; <span class="keyword">finally</span> &#123;</div><div class="line">           <span class="keyword">this</span>.cleanupAfterCompletion(status);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h3 id="8-spring事务管理模板方法"><a href="#8-spring事务管理模板方法" class="headerlink" title="8.spring事务管理模板方法"></a>8.spring事务管理模板方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//模板方法</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionTemplate</span> <span class="keyword">extends</span> <span class="title">DefaultTransactionDefinition</span> <span class="keyword">implements</span> <span class="title">TransactionOperations</span>, <span class="title">InitializingBean</span> </span>&#123;</div><div class="line">    </div><div class="line">       <span class="meta">@Nullable</span></div><div class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">execute</span><span class="params">(TransactionCallback&lt;T&gt; action)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">        Assert.state(<span class="keyword">this</span>.transactionManager != <span class="keyword">null</span>, <span class="string">"No PlatformTransactionManager set"</span>);</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.transactionManager <span class="keyword">instanceof</span> CallbackPreferringPlatformTransactionManager) &#123;</div><div class="line">            <span class="keyword">return</span> ((CallbackPreferringPlatformTransactionManager)<span class="keyword">this</span>.transactionManager).execute(<span class="keyword">this</span>, action);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//1.获取事务状态</span></div><div class="line">            TransactionStatus status = <span class="keyword">this</span>.transactionManager.getTransaction(<span class="keyword">this</span>);</div><div class="line"></div><div class="line">            Object result;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                 <span class="comment">// 2.执行业务逻辑</span></div><div class="line">                result = action.doInTransaction(status);</div><div class="line">            &#125; <span class="keyword">catch</span> (Error | RuntimeException var5) &#123;</div><div class="line">                <span class="comment">////事务回滚</span></div><div class="line">                <span class="keyword">this</span>.rollbackOnException(status, var5);</div><div class="line">                <span class="keyword">throw</span> var5;</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable var6) &#123;</div><div class="line">                <span class="comment">//事务回滚</span></div><div class="line">                <span class="keyword">this</span>.rollbackOnException(status, var6);</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> UndeclaredThrowableException(var6, <span class="string">"TransactionCallback threw undeclared checked exception"</span>);</div><div class="line">            &#125;</div><div class="line">			<span class="comment">//事务提交</span></div><div class="line">            <span class="keyword">this</span>.transactionManager.commit(status);</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><blockquote>
+<p><a href="https://www.javazhiyin.com/35501.html" target="_blank" rel="external">https://www.javazhiyin.com/35501.html</a></p>
+<p><a href="https://www.jianshu.com/p/1bfa61868823" target="_blank" rel="external">https://www.jianshu.com/p/1bfa61868823</a></p>
+<p><a href="https://www.cnblogs.com/dennyzhangdd/p/9602673.html" target="_blank" rel="external">https://www.cnblogs.com/dennyzhangdd/p/9602673.html</a></p>
+</blockquote>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> SpringBoot </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> spring </tag>
+            
+            <tag> SpringBoot </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[记两年工作总结]]></title>
+      <url>/2018/07/22/%E8%AE%B0%E4%B8%A4%E5%B9%B4%E5%B7%A5%E4%BD%9C%E6%80%BB%E7%BB%93/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h3 id="工作两年随笔"><a href="#工作两年随笔" class="headerlink" title="工作两年随笔"></a>工作两年随笔</h3><h4 id="春来秋去-又过去一年了-记两年来工作思考"><a href="#春来秋去-又过去一年了-记两年来工作思考" class="headerlink" title="春来秋去,又过去一年了-记两年来工作思考"></a>春来秋去,又过去一年了-记两年来工作思考</h4><blockquote>
+<p>1.技术发展</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">调岗至本部门,同时这个项目也继续做了一年了,技术也提升了不少</div></pre></td></tr></table></figure>
+<ul>
+<li>Spring框架的熟悉</li>
+<li>Spring Aop的无侵入式日志</li>
+<li>Shiro的权限控制</li>
+<li>memcache的使用</li>
+<li>Quartz定时任务的调度功能</li>
+<li>Apache POI(java api)读写excel</li>
+<li>highcharts 在线导出图片</li>
+<li>Mysql如何设计表结构,字段类型,索引,排查慢sql原因等等</li>
+<li>前端框架的熟悉,了解如何去排查问题和修复</li>
+</ul>
+<blockquote>
+<p>2.技术提升</p>
+</blockquote>
+<ul>
+<li>学习源码</li>
+<li>学习大数据底层相关知识</li>
+<li>学习机器学习</li>
+<li>学习一点前端</li>
+</ul>
+<blockquote>
+<p>3.我的生活</p>
+</blockquote>
+<ul>
+<li>书倒是买了好几本,有的到现在包装都没拆…</li>
+<li>打球打的比较少了,真的自己是变懒了</li>
+<li>618也买了人生第一台单反了,就准备国庆去新疆拍好看的照片了</li>
+</ul>
+<blockquote>
+<p>4.未来计划</p>
+</blockquote>
+<ul>
+<li>看书</li>
+<li>打球</li>
+</ul>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 随笔 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 随笔 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[读书笔记-疯狂Java]]></title>
+      <url>/2018/06/22/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E7%96%AF%E7%8B%82Java/</url>
+      <content type="html"><![CDATA[<contents>
+
+
+<h1 id="读书笔记-疯狂Java：突破程序员基本功的16课"><a href="#读书笔记-疯狂Java：突破程序员基本功的16课" class="headerlink" title="读书笔记-疯狂Java：突破程序员基本功的16课"></a>读书笔记-疯狂Java：突破程序员基本功的16课</h1><h2 id="数组与内存控制"><a href="#数组与内存控制" class="headerlink" title="数组与内存控制"></a>数组与内存控制</h2><h3 id="数组的初始化"><a href="#数组的初始化" class="headerlink" title="数组的初始化"></a>数组的初始化</h3><blockquote>
+<p>所谓的数组初始化：就是为数组对象的元素分配内存空间,并为每个元素制定初始值，</p>
+</blockquote>
+<h4 id="数组的初始化方式"><a href="#数组的初始化方式" class="headerlink" title="数组的初始化方式"></a>数组的初始化方式</h4><ol>
+<li>静态初始化</li>
+</ol>
+<ul>
+<li>初始化时不指定数组长度，显式的指定每个元素的初始值。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">//静态初始化</div><div class="line">int arr[]=&#123;1,2,3&#125;;</div><div class="line"></div><div class="line">int arr2[]=new int[]&#123;1,2,3&#125;;</div></pre></td></tr></table></figure>
+<ol>
+<li>动态初始化</li>
+</ol>
+<ul>
+<li>初始化时只指定数组长度，由系统为数组元素分配初始值。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">//动态初始化</div><div class="line">int arr[]=new int[3];</div></pre></td></tr></table></figure>
+<blockquote>
+<p>无论采用哪种方式,初始化完成后,数组的长度就不会发生改变。</p>
+<p>所有局部变量都是放在栈内存里保存的。不管是基本类型的变量，还是引用类型的变量，都存储在各自的方法栈区。单引用类型变量所引用的对象（数组，普通java对象）存在堆内存中。</p>
+</blockquote>
+<h3 id="对象与内存控制"><a href="#对象与内存控制" class="headerlink" title="对象与内存控制"></a>对象与内存控制</h3><blockquote>
+<p>java内存管理：内存分配和回收。java依然存在内存泄漏</p>
+</blockquote>
+<h4 id="实例变量和类变量"><a href="#实例变量和类变量" class="headerlink" title="实例变量和类变量"></a>实例变量和类变量</h4><ol>
+<li>成员变量<blockquote>
+<p>类体内定义的变量成为成员变量（Field）</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li>实例变量（非静态变量）:没有用static 修饰</li>
+<li>类变量（静态变量）：用static 修饰</li>
+</ul>
+<ol>
+<li>局部变量<blockquote>
+<p>局部变量的作用时间短，存储在方法的/<em>栈内存</em>/中。</p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li>形参:随方法的结束而消亡</li>
+<li>方法内的局部变量：随方法的结束而消亡</li>
+<li>代码块的局部变量：从初始化完成开始生效，随代码快的结束而消亡</li>
+</ul>
+<h5 id="实例变量和类变量的属性"><a href="#实例变量和类变量的属性" class="headerlink" title="实例变量和类变量的属性"></a>实例变量和类变量的属性</h5><ul>
+<li>同一个jvm中每个类只能对应一个Class对象，因此，同应该jvm内的一个类的类变量只需一块内存空间。</li>
+<li>对于实例变量而言，该类每创建一个实例，就需要为该实例变量分配一块内存空间。</li>
+</ul>
+<h5 id="实例变量的初始化时机"><a href="#实例变量的初始化时机" class="headerlink" title="实例变量的初始化时机"></a>实例变量的初始化时机</h5><ol>
+<li>定义实例变量时指定初始值</li>
+<li>非静态初始化块中对实例变量指定初始值</li>
+<li>构造器对实例变量指定初始值</li>
+</ol>
+<blockquote>
+<p>其中执行顺序为（1，2）在3 之前。（1，2）的执行顺序与源程序的排列顺序相同。</p>
+</blockquote>
+<h5 id="类变量的初始化时机"><a href="#类变量的初始化时机" class="headerlink" title="类变量的初始化时机"></a>类变量的初始化时机</h5><blockquote>
+<p>实例变量属性类本身，当初始化该类的时候才会对该类变量分配内存空间,并执行初始化。</p>
+</blockquote>
+<ol>
+<li>定义类变量时指定初始值。</li>
+<li>静态初始块中对类变量指定初始值</li>
+</ol>
+<blockquote>
+<p>执行顺序与源程序的排列顺序相同</p>
+</blockquote>
+<h4 id="父类构造器"><a href="#父类构造器" class="headerlink" title="父类构造器"></a>父类构造器</h4><ul>
+<li>创建对象时候程序调用顺序</li>
+</ul>
+<ol>
+<li>父类非静态初始块</li>
+<li>父类构造器</li>
+<li>本类非静态初始块</li>
+<li>本类构造器</li>
+</ol>
+<h3 id="java集合"><a href="#java集合" class="headerlink" title="java集合"></a>java集合</h3><h4 id="set和Map"><a href="#set和Map" class="headerlink" title="set和Map"></a>set和Map</h4><h5 id="HashMap-HashSet"><a href="#HashMap-HashSet" class="headerlink" title="HashMap HashSet"></a>HashMap HashSet</h5><h5 id="TreeMap-TreeSet"><a href="#TreeMap-TreeSet" class="headerlink" title="TreeMap TreeSet"></a>TreeMap TreeSet</h5><h3 id="java内存回收"><a href="#java内存回收" class="headerlink" title="java内存回收"></a>java内存回收</h3><h4 id="java引用的种类"><a href="#java引用的种类" class="headerlink" title="java引用的种类"></a>java引用的种类</h4></contents>]]></content>
+      
+        <categories>
+            
+            <category> 读书笔记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> 读书笔记 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[读书笔记-大型网站技术架构]]></title>
+      <url>/2018/05/22/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0-%E5%A4%A7%E5%9E%8B%E7%BD%91%E7%AB%99%E6%8A%80%E6%9C%AF%E6%9E%B6%E6%9E%84/</url>
+      <content type="html"><![CDATA[<contents>
+
+
+<h1 id="读书笔记-读书笔记-大型网站技术架构"><a href="#读书笔记-读书笔记-大型网站技术架构" class="headerlink" title="读书笔记-读书笔记-大型网站技术架构"></a>读书笔记-读书笔记-大型网站技术架构</h1><ul>
+<li>大型网站技术架构：核心原理与案例分析+李智慧</li>
+</ul>
+<h2 id="大型网络架构的演化"><a href="#大型网络架构的演化" class="headerlink" title="大型网络架构的演化"></a>大型网络架构的演化</h2><ol>
+<li>演变过程</li>
+</ol>
+<ul>
+<li>单一服务器 -&gt; 集群：处理高并发</li>
+<li>web服务器,数据库服务器，文件服务器分离:提升性能</li>
+<li>增加缓存：</li>
+<li>数据库主从配置,读写分离：</li>
+<li>使用cdn 和nginx反向代理：加速网站访问速度</li>
+<li>使用分布式数据库，分布式文件系统，nosql等</li>
+<li>业务层面的拆分</li>
+</ul>
+<p>2.网站架构</p>
+<ul>
+<li>分层：应用层，服务层，数据层</li>
+</ul>
+<p>3.性能优化</p>
+<ul>
+<li><p>浏览器端:</p>
+<ul>
+<li>浏览器缓存</li>
+<li>页面压缩</li>
+<li>合理的布局</li>
+<li>cdn</li>
+</ul>
+</li>
+<li><p>web前端：</p>
+<ul>
+<li>减少http请求</li>
+<li>使用浏览器缓存</li>
+<li>启用文件压缩</li>
+<li>减少cookie传输(静态资源单独域名,不传输cookie)</li>
+<li>使用cdn</li>
+</ul>
+</li>
+<li><p>服务器端：</p>
+<ul>
+<li>服务器本地缓存,分布式缓存</li>
+<li>异步操作</li>
+<li>集群</li>
+<li>负载均衡<ul>
+<li>HTTP 重定向负载均衡</li>
+<li>DNS 负载均衡</li>
+<li>反向代理负载均衡</li>
+<li>IP负载均衡</li>
+<li>数据链路层负载均衡</li>
+<li></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>数据库层面</p>
+<ul>
+<li>优化sql查询</li>
+<li>使用nosql</li>
+</ul>
+</li>
+</ul>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 读书笔记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 读书笔记 </tag>
+            
+            <tag> 系统架构 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[shiro权限控制]]></title>
+      <url>/2018/05/22/shiro%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="shiro-权限控制"><a href="#shiro-权限控制" class="headerlink" title="shiro 权限控制"></a>shiro 权限控制</h2><h3 id="1-增加jar包"><a href="#1-增加jar包" class="headerlink" title="1.增加jar包"></a>1.增加jar包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&lt;!--shiro start --&gt;</div><div class="line">    &lt;dependency&gt;</div><div class="line">        &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">        &lt;artifactId&gt;shiro-core&lt;/artifactId&gt;</div><div class="line">        &lt;version&gt;$&#123;shiro.version&#125;&lt;/version&gt;</div><div class="line">    &lt;/dependency&gt;</div><div class="line">    &lt;dependency&gt;</div><div class="line">        &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">        &lt;artifactId&gt;shiro-web&lt;/artifactId&gt;</div><div class="line">        &lt;version&gt;$&#123;shiro.version&#125;&lt;/version&gt;</div><div class="line">    &lt;/dependency&gt;</div><div class="line">    &lt;dependency&gt;</div><div class="line">        &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">        &lt;artifactId&gt;shiro-ehcache&lt;/artifactId&gt;</div><div class="line">        &lt;version&gt;$&#123;shiro.version&#125;&lt;/version&gt;</div><div class="line">    &lt;/dependency&gt;</div><div class="line">    &lt;dependency&gt;</div><div class="line">        &lt;groupId&gt;org.apache.shiro&lt;/groupId&gt;</div><div class="line">        &lt;artifactId&gt;shiro-spring&lt;/artifactId&gt;</div><div class="line">        &lt;version&gt;$&#123;shiro.version&#125;&lt;/version&gt;</div><div class="line">    &lt;/dependency&gt;</div><div class="line"></div><div class="line"> &lt;!--shiro end --&gt;</div></pre></td></tr></table></figure>
+<h3 id="2-配置xml"><a href="#2-配置xml" class="headerlink" title="2.配置xml"></a>2.配置xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</div><div class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">    xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd&quot;</div><div class="line">    default-lazy-init=&quot;false&quot;&gt;</div><div class="line"></div><div class="line">    &lt;description&gt;Shiro安全配置&lt;/description&gt;</div><div class="line"></div><div class="line">    &lt;bean id=&quot;sessionDAO&quot;</div><div class="line">        class=&quot;org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO&quot; /&gt;</div><div class="line">    </div><div class="line">    &lt;bean id=&quot;sessionIdCookie&quot; class=&quot;org.apache.shiro.web.servlet.SimpleCookie&quot;&gt;</div><div class="line">        &lt;property name=&quot;name&quot; value=&quot;xxxxxx&quot;&gt;&lt;/property&gt;</div><div class="line">        &lt;property name=&quot;path&quot; value=&quot;/&quot;&gt;&lt;/property&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line">    </div><div class="line">    &lt;bean id=&quot;shiroSessionManager&quot;</div><div class="line">        class=&quot;org.apache.shiro.web.session.mgt.DefaultWebSessionManager&quot;&gt;</div><div class="line">        &lt;property name=&quot;sessionDAO&quot; ref=&quot;sessionDAO&quot; /&gt;</div><div class="line">        &lt;property name=&quot;sessionValidationInterval&quot; value=&quot;1800000&quot; /&gt;</div><div class="line">        &lt;property name=&quot;globalSessionTimeout&quot; value=&quot;1800000&quot; /&gt;</div><div class="line">        &lt;property name=&quot;sessionIdUrlRewritingEnabled&quot; value=&quot;false&quot; /&gt;</div><div class="line">        &lt;property name=&quot;sessionIdCookieEnabled&quot; value=&quot;true&quot; /&gt;</div><div class="line">        &lt;property name=&quot;sessionIdCookie&quot; ref=&quot;sessionIdCookie&quot; /&gt;</div><div class="line"></div><div class="line">    &lt;/bean&gt;</div><div class="line">    </div><div class="line">    </div><div class="line">    &lt;!-- Shiro&apos;s main business-tier object for web-enabled applications --&gt;</div><div class="line">    &lt;bean id=&quot;securityManager&quot; class=&quot;org.apache.shiro.web.mgt.DefaultWebSecurityManager&quot;&gt;</div><div class="line">        &lt;property name=&quot;cacheManager&quot; ref=&quot;shiroCacheManager&quot; /&gt;</div><div class="line">        &lt;property name=&quot;sessionManager&quot; ref=&quot;shiroSessionManager&quot; /&gt;</div><div class="line">        &lt;property name=&quot;realms&quot;&gt;</div><div class="line">            &lt;list&gt;</div><div class="line">                &lt;ref local=&quot;shiroHttpRealm&quot; /&gt;</div><div class="line">            &lt;/list&gt;</div><div class="line">        &lt;/property&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line">    </div><div class="line">    &lt;!-- 编写域 --&gt;</div><div class="line">    &lt;bean id=&quot;shiroHttpRealm&quot; class=&quot;xxx.xx.ShiroHttpRealm&quot;&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line"></div><div class="line">    &lt;!-- Shiro Filter --&gt;</div><div class="line">    &lt;bean id=&quot;roleOrFilter&quot;</div><div class="line">        class=&quot;xxx.CustomRolesAuthorizationFilter&quot; /&gt;</div><div class="line">    &lt;bean id=&quot;updateCurrentInfoFilter&quot; </div><div class="line">        class=&quot;xxx.ModuleAuthorizationFilter&quot; /&gt;</div><div class="line">    &lt;bean id=&quot;validateFilter&quot; </div><div class="line">        class=&quot;xxx.ValidateURLFilter&quot; /&gt;</div><div class="line">    &lt;bean id=&quot;productFilter&quot; </div><div class="line">        class=&quot;xxx.ProductAuthFilter&quot; /&gt;</div><div class="line">    &lt;bean id=&quot;permissionInfoFilter&quot; </div><div class="line">        class=&quot;xxx.PermissionInfoFilter&quot; /&gt;</div><div class="line">        </div><div class="line">    &lt;bean id=&quot;shiroFilter&quot; class=&quot;org.apache.shiro.spring.web.ShiroFilterFactoryBean&quot;&gt;</div><div class="line">        &lt;property name=&quot;securityManager&quot; ref=&quot;securityManager&quot; /&gt;</div><div class="line">        &lt;property name=&quot;loginUrl&quot; value=&quot;$&#123;APP_URL&#125;/login&quot; /&gt;</div><div class="line">        &lt;property name=&quot;successUrl&quot; value=&quot;/index&quot; /&gt;</div><div class="line">        &lt;property name=&quot;unauthorizedUrl&quot; value=&quot;/unauthorized&quot; /&gt;</div><div class="line">        &lt;property name=&quot;filters&quot;&gt;</div><div class="line">            &lt;map&gt;</div><div class="line">                &lt;entry key=&quot;roles&quot; value-ref=&quot;roleOrFilter&quot; /&gt;</div><div class="line">                &lt;entry key=&quot;current&quot; value-ref=&quot;updateCurrentInfoFilter&quot; /&gt;</div><div class="line">                &lt;entry key=&quot;validate&quot; value-ref=&quot;validateFilter&quot; /&gt;</div><div class="line">                &lt;entry key=&quot;productAuth&quot; value-ref=&quot;productFilter&quot; /&gt;</div><div class="line">                &lt;entry key=&quot;permissionInfo&quot; value-ref=&quot;permissionInfoFilter&quot; /&gt;</div><div class="line">            &lt;/map&gt;</div><div class="line">        &lt;/property&gt;</div><div class="line"></div><div class="line">        &lt;!-- 从上到下，从左往右验证--&gt;</div><div class="line">        &lt;property name=&quot;filterChainDefinitions&quot;&gt;</div><div class="line">            &lt;value&gt;</div><div class="line">                &lt;!-- anon 任何用户发送的请求都能够访问--&gt;</div><div class="line">                /unauthorized = anon</div><div class="line">                /assets/** = anon</div><div class="line">                /login/** = anon</div><div class="line"></div><div class="line">                 &lt;!-- user 用户是身份验证通过或RememberMe 登录--&gt;</div><div class="line">                /feedback/** = user</div><div class="line">               </div><div class="line">                 &lt;!-- authc 登录成功才能够访问--&gt;</div><div class="line">                /common/**=authc</div><div class="line">               </div><div class="line">               &lt;!-- 具有1,2,3角色,通过productAuth,validate,permissionInfo过滤器验证--&gt;</div><div class="line">                /**/edit**=roles[1,2,3],productAuth,validate,permissionInfo</div><div class="line">                </div><div class="line">             &lt;!-- 具有1角色,通过permissionInfo过滤器验证--&gt;</div><div class="line">                /adminSettings/**=roles[1],permissionInfo</div><div class="line">                </div><div class="line">                /index/**=authc</div><div class="line">                /** = authc</div><div class="line">                </div><div class="line">            &lt;/value&gt;</div><div class="line">        &lt;/property&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line"></div><div class="line"></div><div class="line">    &lt;!-- 保证实现了Shiro内部lifecycle函数的bean执行 --&gt;</div><div class="line">    &lt;bean id=&quot;lifecycleBeanPostProcessor&quot; class=&quot;org.apache.shiro.spring.LifecycleBeanPostProcessor&quot; /&gt;</div><div class="line">    </div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure>
+<h3 id="3-编写shiro域"><a href="#3-编写shiro域" class="headerlink" title="3.编写shiro域"></a>3.编写shiro域</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">public class ShiroHttpRealm extends AuthorizingRealm &#123;</div><div class="line">    </div><div class="line">    //判断用户是否正常，正常登录返回该用户信息</div><div class="line">    @Override</div><div class="line">    protected AuthorizationInfo doGetAuthorizationInfo( PrincipalCollection principals ) &#123;</div><div class="line">        // TODO Auto-generated method stub</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">    //加载该用户权限信息，方便后面做判断</div><div class="line">    @Override</div><div class="line">    protected AuthenticationInfo doGetAuthenticationInfo( AuthenticationToken token ) throws AuthenticationException &#123;</div><div class="line">        // TODO Auto-generated method stub</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    </div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> spring </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> spring </tag>
+            
+            <tag> shiro </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[jdbc原生api批量插入数据库]]></title>
+      <url>/2018/04/22/jdbc%E5%8E%9F%E7%94%9Fapi%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5%E6%95%B0%E6%8D%AE%E5%BA%93/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="jdbc原生api批量插入数据库"><a href="#jdbc原生api批量插入数据库" class="headerlink" title="jdbc原生api批量插入数据库"></a>jdbc原生api批量插入数据库</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">@Autowired</div><div class="line">JdbcTemplate jdbcTemplate;</div><div class="line"></div><div class="line">public int[] batchInsertOrUpdate( final List&lt;InsertEntity&gt; InsertEntiyList )&#123;</div><div class="line">    StringBuilder stringBuilder = new StringBuilder();</div><div class="line">    //写sql</div><div class="line">    stringBuilder.append( &quot; insert into XXX &quot; )</div><div class="line">                .append( &quot;( xx,xx,xx,xx....&quot; )</div><div class="line">                .append( &quot; values (&quot; )</div><div class="line">                .append( &quot; ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)&quot; )</div><div class="line">                .append( &quot; on duplicate key update &quot; )</div><div class="line">                .append( &quot; xx =?, x=?&quot; );</div><div class="line">    String sql = stringBuilder.toString();</div><div class="line">    int[] updateCounts = jdbcTemplate.batchUpdate( sql, new BatchPreparedStatementSetter() &#123;</div><div class="line">        @Override</div><div class="line">        public void setValues( PreparedStatement ps, int i ) throws SQLException &#123;</div><div class="line">                InsertEntity insertEntity = InsertEntiyList.get( i );</div><div class="line">                ps.setString( 1, xxx);</div><div class="line">                ps.setTimestamp( 2, new java.sql.Timestamp( costDetail.getDate().getTime() ) );</div><div class="line">                //省略其他</div><div class="line">            &#125;</div><div class="line">            @Override</div><div class="line">            public int getBatchSize() &#123;</div><div class="line">                return InsertEntiyList.size();</div><div class="line">            &#125;</div><div class="line">        &#125; );    </div><div class="line">        return updateCounts;</div><div class="line">    &#125;</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> spring </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[序列化拷贝对象]]></title>
+      <url>/2018/03/22/%E5%BA%8F%E5%88%97%E5%8C%96%E6%8B%B7%E8%B4%9D%E5%AF%B9%E8%B1%A1/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="java-序列化拷贝对象"><a href="#java-序列化拷贝对象" class="headerlink" title="java 序列化拷贝对象"></a>java 序列化拷贝对象</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">@SuppressWarnings( &quot;unchecked&quot; )</div><div class="line">private static &lt;T extends Serializable&gt; T deepClone( T obj ) &#123;</div><div class="line">    T cloneObj = null;</div><div class="line">    try &#123;</div><div class="line">        // 写入字节流</div><div class="line">        ByteArrayOutputStream out = new ByteArrayOutputStream();</div><div class="line">        ObjectOutputStream obs = new ObjectOutputStream( out );</div><div class="line">        obs.writeObject( obj );</div><div class="line">        obs.close();</div><div class="line"></div><div class="line">        // 分配内存，写入原始对象，生成新对象</div><div class="line">        ByteArrayInputStream ios = new ByteArrayInputStream( out.toByteArray() );</div><div class="line">        ObjectInputStream ois = new ObjectInputStream( ios );</div><div class="line">        // 返回生成的新对象</div><div class="line">        cloneObj = (T)ois.readObject();</div><div class="line">        ois.close();</div><div class="line">    &#125;</div><div class="line">    catch( Exception e ) &#123;</div><div class="line">        logger.error( e.getMessage() );</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    return cloneObj;</div><div class="line">&#125;</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[spring+memcache缓存注解配置]]></title>
+      <url>/2018/01/22/spring-memcache%E7%BC%93%E5%AD%98%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/</url>
+      <content type="html"><![CDATA[<contents>
+
+
+<h2 id="spring-memcache配置缓存注解-cahceable等"><a href="#spring-memcache配置缓存注解-cahceable等" class="headerlink" title="spring+memcache配置缓存注解@cahceable等"></a>spring+memcache配置缓存注解@cahceable等</h2><h4 id="1-增加memcache-pom文件"><a href="#1-增加memcache-pom文件" class="headerlink" title="1.增加memcache pom文件"></a>1.增加memcache pom文件</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;dependency&gt;</div><div class="line">    &lt;groupId&gt;com.googlecode.xmemcached&lt;/groupId&gt;</div><div class="line">    &lt;artifactId&gt;xmemcached&lt;/artifactId&gt;</div><div class="line">    &lt;version&gt;2.0.0&lt;/version&gt;</div><div class="line">&lt;/dependency&gt;</div></pre></td></tr></table></figure>
+<h3 id="1-配置memcache-xml"><a href="#1-配置memcache-xml" class="headerlink" title="1.配置memcache xml"></a>1.配置memcache xml</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div></pre></td><td class="code"><pre><div class="line">&lt;!-- xmemcached 配置 --&gt;</div><div class="line">        &lt;bean name=&quot;memcachedClient&quot;</div><div class="line">            class=&quot;net.rubyeye.xmemcached.utils.XMemcachedClientFactoryBean&quot;</div><div class="line">            destroy-method=&quot;shutdown&quot;&gt;</div><div class="line">            &lt;property name=&quot;servers&quot;&gt;</div><div class="line">                &lt;!-- ip地址 端口号--&gt;</div><div class="line">                &lt;value&gt;127.0.0.1:11211&lt;/value&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">            &lt;!-- server&apos;s weights --&gt;</div><div class="line">            &lt;property name=&quot;weights&quot;&gt;</div><div class="line">                &lt;list&gt;</div><div class="line">                    &lt;value&gt;1&lt;/value&gt;</div><div class="line">                &lt;/list&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">            &lt;!-- nio connection pool size --&gt;</div><div class="line">            &lt;property name=&quot;connectionPoolSize&quot; value=&quot;2&quot;&gt;&lt;/property&gt;</div><div class="line">            &lt;!-- Use binary protocol,default is TextCommandFactory --&gt;</div><div class="line">            &lt;property name=&quot;commandFactory&quot;&gt;</div><div class="line">                &lt;bean class=&quot;net.rubyeye.xmemcached.command.BinaryCommandFactory&quot;&gt;&lt;/bean&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">            &lt;!-- Distributed strategy --&gt;</div><div class="line">            &lt;property name=&quot;sessionLocator&quot;&gt;</div><div class="line">                &lt;bean class=&quot;net.rubyeye.xmemcached.impl.KetamaMemcachedSessionLocator&quot;&gt;&lt;/bean&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">            &lt;!-- Serializing transcoder --&gt;</div><div class="line">            &lt;property name=&quot;transcoder&quot;&gt;</div><div class="line">                &lt;bean class=&quot;net.rubyeye.xmemcached.transcoders.SerializingTranscoder&quot; /&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">            &lt;!-- ByteBuffer allocator --&gt;</div><div class="line">            &lt;property name=&quot;bufferAllocator&quot;&gt;</div><div class="line">                &lt;bean class=&quot;net.rubyeye.xmemcached.buffer.SimpleBufferAllocator&quot;&gt;&lt;/bean&gt;</div><div class="line">            &lt;/property&gt;</div><div class="line">            &lt;!-- Failure mode --&gt;</div><div class="line">            &lt;property name=&quot;failureMode&quot; value=&quot;false&quot; /&gt;</div><div class="line">        &lt;/bean&gt;</div></pre></td></tr></table></figure>
+<h3 id="3-增加cache-命名空间"><a href="#3-增加cache-命名空间" class="headerlink" title="3.增加cache 命名空间"></a>3.增加cache 命名空间</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;&gt;</div><div class="line">    xmlns:cache=&quot;http://www.springframework.org/schema/cache&quot;</div><div class="line"></div><div class="line">xsi:schemaLocation=&quot;http://www.springframework.org/schema/cache</div><div class="line">http://www.springframework.org/schema/cache/spring-cache-3.1.xsd&quot;</div><div class="line">&gt;</div><div class="line">    //省略... </div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure>
+<h3 id="4-编写MemcachedCache管理类"><a href="#4-编写MemcachedCache管理类" class="headerlink" title="4.编写MemcachedCache管理类"></a>4.编写MemcachedCache管理类</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div></pre></td><td class="code"><pre><div class="line">package com.xxx.cache;</div><div class="line"></div><div class="line">import java.util.concurrent.TimeoutException;</div><div class="line"></div><div class="line">import org.springframework.beans.factory.annotation.Autowired;</div><div class="line">import org.springframework.cache.Cache;</div><div class="line">import org.springframework.cache.support.SimpleValueWrapper;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">import net.rubyeye.xmemcached.MemcachedClient;</div><div class="line">import net.rubyeye.xmemcached.exception.MemcachedException;</div><div class="line"></div><div class="line"></div><div class="line">public class MemcachedCache implements Cache &#123;</div><div class="line">    </div><div class="line">    //这里要注入该项目的缓存</div><div class="line">    @Autowired</div><div class="line">    private MemcachedClient memcachedClient;</div><div class="line"></div><div class="line">    private String name;</div><div class="line"></div><div class="line">    public MemcachedCache() &#123;</div><div class="line">          </div><div class="line">      &#125;</div><div class="line"></div><div class="line">    public MemcachedCache(String name, MemcachedClient memcachedClient) &#123;</div><div class="line">        this.memcachedClient = memcachedClient;</div><div class="line">        this.name = name;  </div><div class="line">      &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public String getName() &#123;</div><div class="line">        return this.name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public Object getNativeCache() &#123;</div><div class="line">        return this.memcachedClient;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public ValueWrapper get( Object key ) &#123;</div><div class="line">        Object value = null;</div><div class="line">        try &#123;</div><div class="line">            value = this.memcachedClient.get( objectToString( key ) );</div><div class="line">        &#125;</div><div class="line">        catch( TimeoutException | InterruptedException | MemcachedException e ) &#123;</div><div class="line"></div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return (value != null ? new SimpleValueWrapper( value ) : null);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void put( Object key, Object value ) &#123;</div><div class="line">        try &#123;</div><div class="line">            this.memcachedClient.set( objectToString( key ), 3600, value );</div><div class="line">        &#125;</div><div class="line">        catch( TimeoutException | InterruptedException | MemcachedException e ) &#123;</div><div class="line"></div><div class="line">           e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void evict( Object key ) &#123;</div><div class="line">        try &#123;</div><div class="line">            this.memcachedClient.delete( objectToString( key ) );</div><div class="line">        &#125;</div><div class="line">        catch( TimeoutException | InterruptedException | MemcachedException e ) &#123;</div><div class="line"></div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Override</div><div class="line">    public void clear() &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private static String objectToString( Object object ) &#123;</div><div class="line">        if( object == null ) &#123;</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">        else if( object instanceof String ) &#123;</div><div class="line">            return (String)object;</div><div class="line">        &#125;</div><div class="line">        else &#123;</div><div class="line">            return object.toString();</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    public void setName( String name ) &#123;</div><div class="line">        this.name = name;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="5-配置CacheManager"><a href="#5-配置CacheManager" class="headerlink" title="5.配置CacheManager"></a>5.配置CacheManager</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">&lt;!-- 启动缓存注解功能 --&gt;</div><div class="line">&lt;cache:annotation-driven/&gt;</div><div class="line"></div><div class="line">&lt;bean id=&quot;cacheManager&quot; class=&quot;org.springframework.cache.support.SimpleCacheManager&quot;&gt;</div><div class="line">    &lt;property name=&quot;caches&quot;&gt;</div><div class="line">        &lt;set&gt;</div><div class="line">            &lt;bean class=&quot;com.xxx.cache.MemcachedCache&quot; p:name=&quot;xxxx&quot;/&gt;</div><div class="line">        &lt;/set&gt;</div><div class="line">    &lt;/property&gt;</div><div class="line">&lt;/bean&gt;</div></pre></td></tr></table></figure>
+<h4 id="6-启用注解"><a href="#6-启用注解" class="headerlink" title="6.启用注解"></a>6.启用注解</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">@Cacheable( value = &quot;xxxx&quot;, key = &quot;#name&quot; )</div><div class="line">public String getName( String name ) &#123;</div><div class="line">    System.err.println( &quot;执行该方法:&quot; + new Date() );</div><div class="line">    //do something</div><div class="line">    return name;</div><div class="line">&#125;</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> spring </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> spring </tag>
+            
+            <tag> memcahce </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[java数字转换]]></title>
+      <url>/2017/07/16/java%E6%95%B0%E5%AD%97%E8%BD%AC%E6%8D%A2/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h1 id="java数字转换"><a href="#java数字转换" class="headerlink" title="java数字转换"></a>java数字转换</h1><h2 id="将小数输出成-形式"><a href="#将小数输出成-形式" class="headerlink" title="将小数输出成%形式"></a>将小数输出成%形式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">double result = 0.51111122111111;</div><div class="line">DecimalFormat df = new DecimalFormat( &quot;0.00%&quot; );</div><div class="line">String str = df.format( result );</div><div class="line">System.out.println( str );</div><div class="line">NumberFormat nf = NumberFormat.getPercentInstance();</div><div class="line">nf.setMinimumFractionDigits(2);// 最小小数位数</div><div class="line">System.out.println(nf.format(0.47));</div></pre></td></tr></table></figure>
+<h2 id="百分数转换为小数"><a href="#百分数转换为小数" class="headerlink" title="百分数转换为小数"></a>百分数转换为小数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">String str = &quot;34.2%&quot;;</div><div class="line">NumberFormat nf = NumberFormat.getPercentInstance();</div><div class="line">Number number=nf.parse( str );</div><div class="line">System.out.println(number );</div></pre></td></tr></table></figure>
+<h2 id="保留两位小数"><a href="#保留两位小数" class="headerlink" title="保留两位小数"></a>保留两位小数</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"># java</div><div class="line">private double transforDecimal( double d ) &#123;</div><div class="line">        BigDecimal bg = new BigDecimal( d );</div><div class="line">        double f1 = bg.setScale( 2, BigDecimal.ROUND_HALF_UP ).doubleValue();</div><div class="line">        return f1;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"># sql</div><div class="line">Round(a,2)</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[一年工作之感悟]]></title>
+      <url>/2017/07/16/%E4%B8%80%E5%B9%B4%E5%B7%A5%E4%BD%9C%E4%B9%8B%E6%84%9F%E6%82%9F/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h1 id="一年工作之感悟"><a href="#一年工作之感悟" class="headerlink" title="一年工作之感悟"></a>一年工作之感悟</h1><h2 id="一年了"><a href="#一年了" class="headerlink" title="一年了"></a>一年了</h2><ul>
+<li>不知不觉中，已经毕业一年了。</li>
+<li>在每天的早出晚归中，每天很怀念大学的生活，想念那些老同学，老朋友。想念一起打球的时光。但是，工作还是得好好工作，还是得学习。</li>
+<li>工作一年了，已经忘了通信的知识，现都在和计算机专业的抢饭碗了。说到计算机，还好自己在大学最后一段时间恶补了一些。</li>
+</ul>
+<h2 id="对于职场的感悟"><a href="#对于职场的感悟" class="headerlink" title="对于职场的感悟"></a>对于职场的感悟</h2><ul>
+<li>永远不要去承担不应该是你的责任。</li>
+<li>祸从口入。该说的时候要说，不该说的时候不要说</li>
+</ul>
+<h2 id="对于技术的感悟"><a href="#对于技术的感悟" class="headerlink" title="对于技术的感悟"></a>对于技术的感悟</h2><ul>
+<li>对于程序员这样一个称谓，总感觉还是配不上的，真的就只是搬砖的。</li>
+<li>一直觉得这句话很对，代码改变世界。要相信自己的代码，也会有这样一天。路漫漫其修远兮，吾将上下而求索。</li>
+<li>这一年间，写代码的能力涨进不小，学习了SSM后台web框架，一直在写后台的接口，虽然是比较简单的。但是自己有些细节方面还是没处理好。未来的日子会从以下几个方面来提升自己<ul>
+<li>优化代码质量，优化代码风格.代码是写给人看的，不是写给机器看的。</li>
+<li>深入了解SSM的框架的底层。</li>
+<li>读jdk的源码。</li>
+<li>努力往大数据，人工智能的方向靠。</li>
+<li>多看书多看书</li>
+</ul>
+</li>
+</ul>
+<h2 id="对于身体的感悟："><a href="#对于身体的感悟：" class="headerlink" title="对于身体的感悟："></a>对于身体的感悟：</h2><ul>
+<li>身体是革命的本钱，自己一年间运动量大减。以后要加强运动啊。</li>
+</ul>
+<h2 id="综述"><a href="#综述" class="headerlink" title="综述"></a>综述</h2><p><strong> 要像高中时候学习，像大学时候运动。 </strong></p>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 随笔 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> 随笔 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Spring框架简单异步发送邮件]]></title>
+      <url>/2017/07/09/Spring%E6%A1%86%E6%9E%B6%E7%AE%80%E5%8D%95%E5%BC%82%E6%AD%A5%E5%8F%91%E9%80%81%E9%82%AE%E4%BB%B6/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h1 id="spring异步发送邮件"><a href="#spring异步发送邮件" class="headerlink" title="spring异步发送邮件"></a>spring异步发送邮件</h1><h2 id="spring-发送邮件"><a href="#spring-发送邮件" class="headerlink" title="spring 发送邮件"></a>spring 发送邮件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">package com.pengm.util;</div><div class="line"></div><div class="line">import java.util.Properties;</div><div class="line">import org.slf4j.Logger;</div><div class="line">import org.slf4j.LoggerFactory;</div><div class="line">import org.springframework.mail.SimpleMailMessage;</div><div class="line">import org.springframework.mail.javamail.JavaMailSenderImpl;</div><div class="line"></div><div class="line"></div><div class="line">/**</div><div class="line"> * 发送告警邮件</div><div class="line"> * </div><div class="line"> * @author pengm</div><div class="line"> *</div><div class="line"> */</div><div class="line">public class MailUtil &#123;</div><div class="line">    private final static Logger logger = LoggerFactory.getLogger( CustomerAdminController.class );</div><div class="line">    /**</div><div class="line">     * </div><div class="line">     * @param subject 主题</div><div class="line">     * @param text 内容</div><div class="line">     */</div><div class="line">    public static void sendMail( String subject, String text ) &#123;</div><div class="line">        JavaMailSenderImpl senderImpl = new JavaMailSenderImpl();</div><div class="line">        senderImpl.setDefaultEncoding( &quot;utf-8&quot; );</div><div class="line">        // 设定mail server</div><div class="line">        senderImpl.setHost( &quot;smtp-ent.21cn.com&quot; );</div><div class="line">        senderImpl.setPort( 25 );</div><div class="line"></div><div class="line">        // 建立邮件消息</div><div class="line">        SimpleMailMessage mailMessage = new SimpleMailMessage();</div><div class="line">        // 设置多人收</div><div class="line">        String[] users = new String[] &#123; &quot;pengm@corp.21cn.com&quot; &#125;;</div><div class="line">        mailMessage.setTo( users );</div><div class="line">        mailMessage.setFrom( &quot;pengm@corp.21cn.com&quot; );</div><div class="line">        mailMessage.setSubject( subject );</div><div class="line">        mailMessage.setText( text );</div><div class="line"></div><div class="line">        senderImpl.setUsername( &quot;pengm@corp.21cn.com&quot; );</div><div class="line">        senderImpl.setPassword( &quot;xxxx&quot; );</div><div class="line"></div><div class="line">        Properties prop = new Properties();</div><div class="line">        prop.put( &quot;mail.smtp.auth&quot;, &quot;true&quot; ); // 将这个参数设为true，让服务器进行认证,认证用户名和密码是否正确</div><div class="line">        prop.put( &quot;mail.smtp.timeout&quot;, &quot;25000&quot; );</div><div class="line">        senderImpl.setJavaMailProperties( prop );</div><div class="line">        // 发送邮件</div><div class="line">        senderImpl.send( mailMessage );</div><div class="line"></div><div class="line">        logger.warn( &quot;邮件发送成功...&quot; );</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h1 id="sping-配置-异步模式"><a href="#sping-配置-异步模式" class="headerlink" title="sping 配置 异步模式"></a>sping 配置 异步模式</h1><ol>
+<li>spring-mvc.xml 配置:需要加入命名空间:</li>
+</ol>
+<blockquote>
+<p>xmlns:task=”<a href="http://www.springframework.org/schema/task" target="_blank" rel="external">http://www.springframework.org/schema/task</a>“</p>
+<p><a href="http://www.springframework.org/schema/task" target="_blank" rel="external">http://www.springframework.org/schema/task</a><br><a href="http://www.springframework.org/schema/task/spring-task-4.1.xsd" target="_blank" rel="external">http://www.springframework.org/schema/task/spring-task-4.1.xsd</a></p>
+</blockquote>
+<p>完整配置:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</div><div class="line">    xmlns:aop=&quot;http://www.springframework.org/schema/aop&quot; xmlns:context=&quot;http://www.springframework.org/schema/context&quot;</div><div class="line">    xmlns:mvc=&quot;http://www.springframework.org/schema/mvc&quot; xmlns:tx=&quot;http://www.springframework.org/schema/tx&quot;</div><div class="line">    xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:task=&quot;http://www.springframework.org/schema/task&quot;</div><div class="line">    xsi:schemaLocation=&quot;http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.1.xsd</div><div class="line">        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd</div><div class="line">        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd   </div><div class="line">        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd</div><div class="line">        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.1.xsd</div><div class="line">        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.1.xsd&quot;&gt;</div><div class="line"></div><div class="line">    &lt;!-- 启用spring mvc 注解 --&gt;</div><div class="line">    &lt;context:annotation-config /&gt;</div><div class="line">    &lt;!-- 自动扫描该包，使SpringMVC认为包下用了@controller注解的类是控制器 --&gt;</div><div class="line">    &lt;context:component-scan base-package=&quot;com.cn21&quot; /&gt;</div><div class="line">    &lt;mvc:annotation-driven&gt;</div><div class="line">        &lt;mvc:message-converters register-defaults=&quot;true&quot;&gt;</div><div class="line">            &lt;!-- 将StringHttpMessageConverter的默认编码设为UTF-8 --&gt;</div><div class="line">            &lt;bean class=&quot;org.springframework.http.converter.StringHttpMessageConverter&quot;&gt;</div><div class="line">                &lt;constructor-arg value=&quot;UTF-8&quot; /&gt;</div><div class="line">            &lt;/bean&gt;</div><div class="line">        &lt;/mvc:message-converters&gt;</div><div class="line">    &lt;/mvc:annotation-driven&gt;</div><div class="line">    </div><div class="line">    &lt;!-- 异步模式 --&gt;</div><div class="line">    &lt;!--异步定义推荐方式  --&gt;  </div><div class="line">    &lt;task:executor id=&quot;executor&quot; pool-size=&quot;15&quot; /&gt;  </div><div class="line">    &lt;task:scheduler id=&quot;scheduler&quot; pool-size=&quot;30&quot; /&gt;  </div><div class="line">    &lt;task:annotation-driven executor=&quot;executor&quot; scheduler=&quot;scheduler&quot; /&gt;  </div><div class="line">    </div><div class="line">    &lt;!-- 启动SpringMVC的注解功能，完成请求和注解POJO的映射 --&gt;</div><div class="line">    &lt;bean class=&quot;org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter&quot; /&gt;</div><div class="line">    &lt;!-- &lt;bean</div><div class="line">        class=&quot;org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter&quot;&gt;</div><div class="line">        &lt;property name=&quot;messageConverters&quot;&gt;</div><div class="line">            &lt;list&gt;</div><div class="line">                &lt;ref bean=&quot;mappingJacksonHttpMessageConverter&quot; /&gt; JSON转换器</div><div class="line">            &lt;/list&gt;</div><div class="line">        &lt;/property&gt;</div><div class="line">    &lt;/bean&gt; --&gt;</div><div class="line">    </div><div class="line">    &lt;mvc:resources location=&quot;/assets/&quot; mapping=&quot;/assets/**&quot;/&gt;</div><div class="line">    &lt;!-- 定义跳转的文件的前后缀 ，视图模式配置 --&gt;</div><div class="line">    &lt;bean</div><div class="line">        class=&quot;org.springframework.web.servlet.view.InternalResourceViewResolver&quot;&gt;</div><div class="line">        &lt;!-- 这里的配置我的理解是自动给后面action的方法return的字符串加上前缀和后缀，变成一个 可用的url地址 --&gt;</div><div class="line">        &lt;property name=&quot;prefix&quot; value=&quot;/WEB-INF/views/&quot; /&gt;</div><div class="line">        &lt;property name=&quot;suffix&quot; value=&quot;.jsp&quot; /&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line">    </div><div class="line">    </div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure></p>
+<p>AsyncTaskTest:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div></pre></td><td class="code"><pre><div class="line">import org.springframework.scheduling.annotation.Async;</div><div class="line">import org.springframework.stereotype.Component;</div><div class="line"></div><div class="line">import com.pengm.util.MailUtil;</div><div class="line"></div><div class="line">@Component</div><div class="line">public class AsyncTaskTest &#123;</div><div class="line"></div><div class="line">    @Async</div><div class="line">    public void doSomething() throws Exception &#123;</div><div class="line">        Thread.sleep( 10000 );</div><div class="line">        System.out.println( &quot;begin doSomthing....&quot; );</div><div class="line">        doSome();</div><div class="line">        Thread.sleep( 10000 );</div><div class="line">        System.out.println( &quot;end doSomthing....&quot; );</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public static void doSome() &#123;</div><div class="line">        for( int i = 0; i &lt; 10; i++ ) &#123;</div><div class="line">            try &#123;</div><div class="line">                Thread.sleep( 2000 );</div><div class="line">                System.out.println( i );</div><div class="line">            &#125;</div><div class="line">            catch( InterruptedException e ) &#123;</div><div class="line">                e.printStackTrace();</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>adminController:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line">import org.springframework.beans.factory.annotation.Autowired;</div><div class="line">import org.springframework.stereotype.Controller;</div><div class="line">import org.springframework.web.bind.annotation.RequestMapping;</div><div class="line">import org.springframework.web.bind.annotation.ResponseBody;</div><div class="line"></div><div class="line">@Controller</div><div class="line">@RequestMapping(value=&quot;/admin&quot;)</div><div class="line">public class adminController &#123;</div><div class="line">        </div><div class="line"></div><div class="line">    @Autowired</div><div class="line">    AsyncTaskTest asyncTask;</div><div class="line"></div><div class="line">    @RequestMapping( &quot;/test&quot; )</div><div class="line">    @ResponseBody</div><div class="line">    public String asynTest() &#123;</div><div class="line">        try &#123;</div><div class="line">            System.out.println( &quot;我开始执行了！&quot; );</div><div class="line">            asyncTask.doSomething();</div><div class="line">            System.out.println( &quot;我执行结束了！&quot; );</div><div class="line">        &#125;</div><div class="line">        catch( Exception e ) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">        &#125;</div><div class="line">        return &quot;account/index&quot;;</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>后台打印结果：</p>
+<blockquote>
+<p>我开始执行了！<br>我执行结束了！<br>begin doSomthing….<br>0<br>1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>end doSomthing….</p>
+</blockquote>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意:"></a>注意:</h2><ul>
+<li>异步方法和调用类不要在同一个类中</li>
+<li>注解扫描时，要注意过滤，避免重复实例化，因为存在覆盖问题，@Async就失效了</li>
+</ul>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> spring </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> spring </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Mysql优化]]></title>
+      <url>/2017/07/09/Mysql%E4%BC%98%E5%8C%96/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h1 id="MySQL优化"><a href="#MySQL优化" class="headerlink" title="MySQL优化"></a>MySQL优化</h1><h2 id="常见的优化步骤"><a href="#常见的优化步骤" class="headerlink" title="常见的优化步骤"></a>常见的优化步骤</h2><ol>
+<li>优化sql语句和索引</li>
+<li>增加缓存：memcached,redis</li>
+<li>主从复制，读写分离</li>
+<li>垂直拆分，水平拆分</li>
+</ol>
+<h2 id="MySQL数据库设计总结"><a href="#MySQL数据库设计总结" class="headerlink" title="MySQL数据库设计总结"></a>MySQL数据库设计总结</h2><ol>
+<li>优先使用MyISAM存储引擎。有事务需要的使用InnoDB存储引擎</li>
+<li>命名规则:<ul>
+<li>表名都小写,单词之间用下划线分开</li>
+<li>表名：tb<em>业务名称</em>功能</li>
+</ul>
+</li>
+<li>数据库字段类型定义：<ul>
+<li>变长使用varchar</li>
+<li>把IP地址存成 UNSIGNED INT</li>
+<li>如性别,状态,部门使用 ENUM 而不是 VARCHAR</li>
+<li>小数类型为decimal，禁止使用float和double</li>
+</ul>
+</li>
+<li>每个表都应该有主键自增id, 创建时间，修改时间,状态。方便以后查看</li>
+</ol>
+<h2 id="索引规则"><a href="#索引规则" class="headerlink" title="索引规则"></a>索引规则</h2><ol>
+<li>表的主键、外键必须有索引</li>
+<li>索引应该建在选择性高的字段上</li>
+<li>索引应该建在小字段上，对于大的文本字段甚至超长字段，不要建索引</li>
+<li>频繁进行数据操作的表，不要建立太多的索引</li>
+<li>唯一确定一条记录的一个字段或多个字段要建立主键或者唯一索引，不能唯一确定一条记录，为了查询效率建普通索引</li>
+</ol>
+<h2 id="查询规则"><a href="#查询规则" class="headerlink" title="查询规则"></a>查询规则</h2><ol>
+<li>避免使用 select * from</li>
+<li>delete 删除时候 先select </li>
+<li>能用UNION ALL就不要用UNION</li>
+<li>能用DISTINCT的就不用GROUP BY</li>
+<li>以下情况避免使用，会放弃索引而全表扫描<ul>
+<li>尽量避免在 where 子句中使用!=或&lt;&gt;</li>
+<li>尽量避免在 where 子句中使用 or (使用union all)</li>
+<li>尽量避免在 where 字句中使用 in 和 not in </li>
+</ul>
+</li>
+<li>用 exists 代替 in</li>
+</ol>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 数据库 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Mysql </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Linux 生疏命令]]></title>
+      <url>/2017/05/29/linux/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h1 id="Linux生疏命令"><a href="#Linux生疏命令" class="headerlink" title="Linux生疏命令"></a>Linux生疏命令</h1><blockquote>
+<p>du -ch  ${localAppUserWithE189File}|grep total|cut -f1</p>
+</blockquote>
+<h2 id="du-命令"><a href="#du-命令" class="headerlink" title="du 命令"></a>du 命令</h2><blockquote>
+<p>  显示每个文件和目录的磁盘使用空间。</p>
+<ul>
+<li>-a 显示目录中个别文件的大小</li>
+<li>-c 除了显示个别目录或文件的大小外，同时也显示所有目录或文件的总和。 </li>
+<li>-h 以K，M，G为单位，提高信息的可读性。</li>
+</ul>
+</blockquote>
+<h2 id="cut-命令"><a href="#cut-命令" class="headerlink" title="cut 命令"></a>cut 命令</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># 用-d来设置间隔符为冒号，然后用-f来设置取的范围</div><div class="line">cut -d : -f 1</div></pre></td></tr></table></figure>
+<h2 id="shell-输入输出重定向"><a href="#shell-输入输出重定向" class="headerlink" title="shell 输入输出重定向"></a>shell 输入输出重定向</h2><h3 id="输出重定向-gt-或者-gt-gt"><a href="#输出重定向-gt-或者-gt-gt" class="headerlink" title="输出重定向  &gt;或者&gt;&gt;"></a>输出重定向  &gt;或者&gt;&gt;</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt; 会覆盖之前的内容</div><div class="line">&gt;&gt; 追加方式,不会覆盖之前内容</div></pre></td></tr></table></figure>
+<h3 id="输入重定向-lt"><a href="#输入重定向-lt" class="headerlink" title="输入重定向 &lt;"></a>输入重定向 &lt;</h3><p>&gt;<br>一般情况下，每个 Unix/Linux 命令运行时都会打开三个文件：</p>
+<ul>
+<li>标准输入文件(stdin)：stdin的文件描述符为0，Unix程序默认从stdin读取数据。</li>
+<li>标准输出文件(stdout)：stdout 的文件描述符为1，Unix程序默认向stdout输出数据。</li>
+<li>标准错误文件(stderr):stderr的文件描述符为2，Unix程序会向stderr流中写入错误信息。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">$command &gt;file  :将stdout重定向到file</div><div class="line">$command &lt; file  ：将stdin 重定向到file</div><div class="line"></div><div class="line">$command 2 &gt;file  :将stderr重定向到file</div><div class="line">$command 2 &gt;&gt;file  :将stderr以追加方式重定向到file</div><div class="line"></div><div class="line">$command &gt;file 2&gt;&amp;1  : stdout 和 stderr 合并后重定向到 file</div><div class="line">$command &gt;&gt;file  2&gt;&amp;1 : stdout 和 stderr 合并后以追加方式重定向到 file</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">#-i 忽略大小写</div><div class="line">cat $&#123;WgetFile&#125;|grep -i STATUS_INFO &gt;&gt;  $&#123;WgetLog&#125;</div></pre></td></tr></table></figure>
+<h2 id="wget"><a href="#wget" class="headerlink" title="wget"></a>wget</h2><p>文件处理参数：</p>
+<ul>
+<li>-o 将软件输出信息保存到文件</li>
+<li>-a 将软件输出信息追加保存到文件</li>
+<li>-d 显示输出信息</li>
+<li>-q 不显示输出信息</li>
+<li>-v (verbose)详尽的输出(此为默认值)。</li>
+<li>-nv 关闭详尽输出，但不进入安静模式。</li>
+<li>-i 从文件中获取url</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"># </div><div class="line">wget -o  /data/test/wget_out.txt  www.baidu.com</div><div class="line"></div><div class="line">#</div><div class="line">wget -a  /data/test/wget_out.txt  www.baidu.com</div><div class="line"></div><div class="line">#</div><div class="line">wget -d www.baidu.com</div><div class="line"></div><div class="line">#</div><div class="line">wget -q wwww.baidu.com</div><div class="line"></div><div class="line">#</div><div class="line">wget -i /data/test/fileurl.txt</div></pre></td></tr></table></figure>
+<p>下载参数：</p>
+<ul>
+<li>-t 下载次数(0表示多次)</li>
+<li>-O 下载文件保存为别的文件名</li>
+<li>-nc 不要覆盖已经存在的文件</li>
+<li>-N 只下载比本地新的文件</li>
+<li>-T 设置超时时间</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"># </div><div class="line">wget -nv -t1 -O $&#123;WgetFile&#125; -a $&#123;WgetLog&#125;  http\:\/\/www.baidu.com\:8082</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">#hadoop 设置回收站</div><div class="line"></div><div class="line">#如果没有回收站，那么执行下面就文件直接会被删除</div><div class="line">hadoop fs -rmr </div><div class="line"></div><div class="line">#为了避免误删除 需要设置开启垃圾箱 在core-site.xml 添加配置</div><div class="line">&lt;property&gt;  </div><div class="line">  &lt;name&gt;fs.trash.interval&lt;/name&gt;  </div><div class="line">  &lt;value&gt;1440&lt;/value&gt;  </div><div class="line">&lt;/property&gt;  </div><div class="line"></div><div class="line">#这样就开启垃圾回收站了</div><div class="line"></div><div class="line"># -skipTrash  直接删除</div><div class="line">hadoop fs -rm -r -skipTrash</div></pre></td></tr></table></figure></contents>]]></content>
+      
+        <categories>
+            
+            <category> Linux </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> Linux </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Scrapy爬取新民网]]></title>
+      <url>/2017/04/03/Scrapy-xinmin/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="scrapy编写"><a href="#scrapy编写" class="headerlink" title="scrapy编写"></a>scrapy编写</h2><p>1.建立scrapy项目<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">scrapy startproject xinmin</div></pre></td></tr></table></figure></p>
+<p>项目结构如图：<br><img src="http://img.blog.csdn.net/20170403142911824?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMDc0MjA0OQ==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="scrapy框架目录"></p>
+<p>2.编写items,定义爬取内容<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"># 发布者</div><div class="line">publishername = scrapy.Field()</div><div class="line"></div><div class="line"># 分类</div><div class="line">category = scrapy.Field()</div><div class="line"></div><div class="line"># 标题</div><div class="line">title = scrapy.Field()</div><div class="line"></div><div class="line"># 正文</div><div class="line">text = scrapy.Field()</div><div class="line"> </div><div class="line"># 网址链接</div><div class="line">linkurl = scrapy.Field()</div><div class="line"></div><div class="line"># 发布时间</div><div class="line">publishtime = scrapy.Field()</div></pre></td></tr></table></figure></p>
+<p>3.编写spilder</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div></pre></td><td class="code"><pre><div class="line"># -*- coding: utf-8 -*-</div><div class="line">import scrapy</div><div class="line">from scrapy.spiders import CrawlSpider</div><div class="line">from scrapy.selector import Selector</div><div class="line">from xinmin.items import XinminItem</div><div class="line"></div><div class="line"></div><div class="line">class XinminSpider(CrawlSpider):</div><div class="line">    #初始化</div><div class="line">    name = &quot;xinmin&quot;</div><div class="line">    allowed_domains = [&quot;shanghai.xinmin.cn&quot;]</div><div class="line">    start_urls = [&apos;http://shanghai.xinmin.cn/t/gdbd/&apos;]</div><div class="line">    #srartUrl = &apos;http://shanghai.xinmin.cn/t/gdbd/&apos;</div><div class="line">    </div><div class="line">    #解析页面的所以新闻链接</div><div class="line">    def parse(self, response):</div><div class="line">        selector = Selector(response)</div><div class="line">        # 获取当前页面所有新闻的链接</div><div class="line">        newslink_list = selector.xpath(&quot;//div[contains(@class,&apos;list_list&apos;)]/a/@href&quot;).extract()</div><div class="line">        # 读取每一个链接</div><div class="line">        for link_url in newslink_list:</div><div class="line">            #print(&quot;新闻链接:&quot;, link_url)</div><div class="line">            yield scrapy.Request(link_url, callback=self.parse_item)</div><div class="line"></div><div class="line">        # 下一页</div><div class="line">        next_url = self.start_urls[0] + response.xpath(&apos;//a[@class=&quot;unselect&quot;]/@href&apos;).extract_first()  # 翻页</div><div class="line">        print(&apos;next_url&apos;, next_url)</div><div class="line">        if next_url:</div><div class="line">            yield scrapy.Request(next_url, callback=self.parse)</div><div class="line"></div><div class="line"></div><div class="line">     # 抓取新闻详细内容</div><div class="line">    def parse_item(self, response):</div><div class="line">        #print(&apos;开始处理item...&apos;)</div><div class="line">        item = XinminItem()</div><div class="line">        selector = Selector(response)</div><div class="line">        # 网址链接</div><div class="line">        item[&apos;linkurl&apos;] = response.url</div><div class="line"></div><div class="line">        # 分类 +</div><div class="line">        item[&apos;category&apos;] = selector.xpath(&quot;//div[contains(@class,&apos;xinminMianbaoxue&apos;)]/a[3]/text()&quot;).extract()</div><div class="line">        # 标题</div><div class="line">        item[&apos;title&apos;] = selector.xpath(&quot;//h1[contains(@class,&apos;article_title&apos;)]/text()&quot;).extract()</div><div class="line">        # 正文</div><div class="line">        item[&apos;text&apos;] = selector.xpath(&quot;//div[contains(@class,&apos;a_p&apos;)]/p/text()&quot;).extract()</div><div class="line"></div><div class="line">        # 发布时间 这两个会变化</div><div class="line">        info=selector.xpath(&quot;html/body/div[4]/div[1]/div[2]/div[2]/div/span[4]/text()&quot;).extract()</div><div class="line">        item[&apos;publishtime&apos;] = selector.xpath(&quot;//div[contains(@class,&apos;info&apos;)]/span[3]/text()&quot;).extract()</div><div class="line">        # 发布者</div><div class="line">        # xpath语句太长 下一版修改</div><div class="line">        item[&apos;publishername&apos;] = selector.xpath(&quot;//div[contains(@class,&apos;info&apos;)]/span[4]/text()&quot;).extract()</div><div class="line">        yield item</div></pre></td></tr></table></figure>
+<p>4.settings 修改设置<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"># Obey robots.txt rules</div><div class="line">ROBOTSTXT_OBEY = False</div><div class="line"></div><div class="line">DOWNLOAD_DELAY = 4</div><div class="line"></div><div class="line">COOKIES_ENABLED = False</div></pre></td></tr></table></figure></p>
+<p>5.编写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"># -*- coding: utf-8 -*-</div><div class="line"></div><div class="line">class XinminPipeline(object):</div><div class="line">    #去掉空格换行符</div><div class="line">    @staticmethod</div><div class="line">    def get_list(data_list):</div><div class="line">        data_str = &apos;&apos;</div><div class="line">        for i in data_list:</div><div class="line">            i = str(i).strip()</div><div class="line">            data_str = data_str + i</div><div class="line"></div><div class="line">        return data_str</div><div class="line"></div><div class="line">    #写入文件</div><div class="line">    def process_item(self, item, spider):</div><div class="line">        today = time.strftime(&quot;%Y-%m-%d&quot;, time.localtime())</div><div class="line">        # 文件路径</div><div class="line">        file_path = &quot;../data/&quot;+today+&quot;.txt&quot;</div><div class="line">        with open(file_path, &quot;a&quot;, encoding=&quot;utf-8&quot;) as f:</div><div class="line">            print(&apos;开始写入文件....&apos;)</div><div class="line">            f.write(&quot;linkurl:&quot; + self.get_list(item[&apos;linkurl&apos;]) + &quot;\n&quot;)</div><div class="line">            f.write(&quot;title:&quot; + self.get_list(item[&apos;title&apos;]) + &quot;\n&quot;)</div><div class="line">            f.write(&quot;category:&quot; + self.get_list(item[&apos;category&apos;]) + &quot;\n&quot;)</div><div class="line">            f.write(&quot;publishername:&quot; + self.get_list(item[&apos;publishername&apos;]) + &quot;\n&quot;)</div><div class="line">            f.write(&quot;publishtime:&quot; + self.get_list(item[&apos;publishtime&apos;]) + &quot;\n&quot;)</div><div class="line">            f.write(&quot;text:&quot; + self.get_list(item[&apos;text&apos;]) + &quot;\n&quot;)</div><div class="line"></div><div class="line"></div><div class="line">            f.write(&quot;\n&quot;)</div><div class="line"></div><div class="line">            print(&apos;成功写入...&apos;)</div><div class="line">        return item</div></pre></td></tr></table></figure></p>
+<p>##未完善的地方<br>1.有两个抓取的指标（作者，发布日期）会变，没有处理<br>2.没有考虑反爬的问题</p>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 爬虫 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> scrapy </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[java代码审查]]></title>
+      <url>/2017/03/03/java-demo/</url>
+      <content type="html"><![CDATA[<contents>
+
+<p>1.工具类或者常量类里面的方法都是静态的，建议直接用类名调用，不用创建对象，所以将构造方法私有化，禁止创建对象</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">//error example:</div><div class="line">public  class StringUtils&#123;</div><div class="line">    /**</div><div class="line">     * 判断一个字符串是否为英文中文或数字</div><div class="line">     * </div><div class="line">     * @param str</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static boolean isLetterDigitOrChinese( String str ) &#123;</div><div class="line">        String regex = &quot;^[a-z0-9A-Z\u4e00-\u9fa5]+$&quot;;</div><div class="line">        return str.matches( regex );</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"> //right example:</div><div class="line"> public  class StringUtils&#123;</div><div class="line">  //添加构造私有构造方法</div><div class="line">    private StringUtils&#123;</div><div class="line">    &#125;</div><div class="line">    /**</div><div class="line">     * 判断一个字符串是否为英文中文或数字</div><div class="line">     * </div><div class="line">     * @param str</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static boolean isLetterDigitOrChinese( String str ) &#123;</div><div class="line">        String regex = &quot;^[a-z0-9A-Z\u4e00-\u9fa5]+$&quot;;</div><div class="line">        return str.matches( regex );</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>2.NPE(空指针异常)-equals</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">//error </div><div class="line">String testString=&quot;abc&quot;;</div><div class="line">if(testString.equals(&quot;abc&quot;))&#123;</div><div class="line"></div><div class="line">&#125;else&#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line">//right</div><div class="line">String testString=&quot;abc&quot;;</div><div class="line">if(&quot;abc&quot;.eqauls(testString))&#123;</div><div class="line">	//code</div><div class="line">&#125;else&#123;</div><div class="line">	//code</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>3.map list 新建 (java 1.7 )</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// Noncompliant</div><div class="line">List&lt;String&gt; strings = new ArrayList&lt;String&gt;();  </div><div class="line">Map&lt;String,List&lt;Integer&gt;&gt; map = new HashMap&lt;String,List&lt;Integer&gt;&gt;();  </div><div class="line"></div><div class="line">//Compliant Solution</div><div class="line">List&lt;String&gt; strings = new ArrayList&lt;&gt;();</div><div class="line">Map&lt;String,List&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();</div></pre></td></tr></table></figure>
+<p>4.使用isEmpty 来判断集合是否为空<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">//Noncompliant</div><div class="line">if(data.size==0)&#123;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">//compliant</div><div class="line">if(data.isEmpty)&#123;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>5.数组定义 (“[]” 在变量名字前面)<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">//Noncompliant</div><div class="line">int arr[]=&#123;&#125;;</div><div class="line"></div><div class="line">//compliant</div><div class="line">int[] arr=&#123;&#125;;</div></pre></td></tr></table></figure></p>
+<p>6.字符串转换为数字<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">//Noncompliant</div><div class="line">String numString=&quot;12222222&quot;;</div><div class="line">long numLong=Long.valueOf(numString);</div><div class="line">//compliant</div><div class="line">String numString=&quot;12222222&quot;;</div><div class="line">long posNum=Long.parseLong( posMap.get( &quot;num&quot; ).toString());</div></pre></td></tr></table></figure></p>
+<p>7.公共静态成员应该加上final，也就是public static final 一般不分家</p>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[学习scala和spark的一些内容]]></title>
+      <url>/2016/12/23/StudySpark/</url>
+      <content type="html"><![CDATA[<contents>
+
+<h2 id="scala中的函数一些用法"><a href="#scala中的函数一些用法" class="headerlink" title="scala中的函数一些用法"></a>scala中的函数一些用法</h2><ul>
+<li>trim 开头和结尾的空白忽略</li>
+<li>map 对每一条输入进行指定的操作，然后为每一条输入返回一个对象</li>
+<li>filter 过滤</li>
+</ul>
+<h2 id="scala-特殊符号用法"><a href="#scala-特殊符号用法" class="headerlink" title="scala 特殊符号用法"></a>scala 特殊符号用法</h2><ul>
+<li>::: 三个冒号运算符(list的连接操作)</li>
+<li>:: 两个冒号运算符：表示普通元素与list的连接操作</li>
+<li>_N下划线数字运算符：用于访问元组的第N个元素，N的取值从1开始(元组的元素类型可以不同。)</li>
+<li>&lt;- 用于遍历集合对象</li>
+<li>=&gt; 匿名函数 </li>
+<li>Int =&gt; String表示函数输入为Int型，返回String型，同Function(Int,String) () =&gt; T表示函数没有输入参数，但返回T</li>
+</ul>
+<h2 id="scala中下划线含义"><a href="#scala中下划线含义" class="headerlink" title="scala中下划线含义"></a>scala中下划线含义</h2><ul>
+<li>_ 下划线 有很多含义<br>1.通配符<br>2.匿名函数<br>3.指代集合中的每一个元素。例如筛选列表中大于某个值的元素<br>4.使用模式匹配可以用来获取元组的组员。<blockquote>
+<p>val m = Map(1 -&gt; 2,2 -&gt; 4) for ((k,) &lt;- m) println(k)<br>//只取key,因此在value处用_</p>
+</blockquote>
+</li>
+</ul>
+<p>5.:_* 作为一个整体，告诉编译器你希望将某个参数当作数序列处理。<br>6.+=：为map类型变量添加元素 -=：为map类型变量移除元素及其对应的值</p>
+<h2 id="小括号与大括号"><a href="#小括号与大括号" class="headerlink" title="小括号与大括号"></a>小括号与大括号</h2><ul>
+<li>scala中函数的小括号，可以用花括号来表示，即foo{xx} 与 foo(xx)是一回事儿。</li>
+<li>对于只有一个参数的方法，其小括号是可以省略的，map(lambda)可写为 map lambda，即这块{case 2 =&gt; “OK”}连同花括号整体是一个lambda(函数字面量)。<blockquote>
+<p>// map方法这样写不能编译通过<br>scala&gt; List(2).map( case 2 =&gt; “OK” )<br>// 换做花括号就可以了<br>scala&gt; List(2).map{ case 2 =&gt; “OK” }</p>
+</blockquote>
+</li>
+</ul>
+<h2 id="Option-T"><a href="#Option-T" class="headerlink" title="Option[T]"></a>Option[T]</h2><ul>
+<li>用 Option[T] 来避免 NullPointerException</li>
+<li>Option有两个子类别，Some和None。当程序回传Some的时候，代表这个函式成功地给了你一个String，而你可以透过get()函数拿到那个String，如果程序返回的是None，则代表没有字符串可以给你。<h2 id="reduceLeft-和-reduce"><a href="#reduceLeft-和-reduce" class="headerlink" title="reduceLeft 和 reduce"></a>reduceLeft 和 reduce</h2></li>
+<li>reduceLeft 和 reduceRight 我们可以强制处理元素的方向。（使用 reduce 方向是不被保证的）</li>
+</ul>
+<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><ul>
+<li><p>函数和方法一般用def定义；也可以用val定义匿名函数，或者定义函数别名。</p>
+<blockquote>
+<p>def m0(x:Int) = x<em>x<br>val m1 = (x:Int)=&gt; x</em>x // 用(), ()是必须的<br>val m2 = {x:Int=&gt; x*x} // 用{}, {}是必须的</p>
+</blockquote>
+</li>
+<li><p>不需要返回值的函数，可以使用def f() {…}，永远返回Unit（即使使用了return）,即：<br>  def f() {…}  等价于 def f():Unit = {…}</p>
+</li>
+<li><p>需要返回值的函数，用 def f() = {…} 或者 def f = {…}</p>
+</li>
+<li><p>对象的无参数方法的调用，可以省略.和()</p>
+<blockquote>
+<p>“hello world” toUpperCase // “HELLO WORLD”</p>
+</blockquote>
+</li>
+<li><p>匿名函数  ((命名参数列表)=&gt;函数实现)(参数列表)<br>1.无参数： (()=&gt;函数实现)()<br>2.有一个参数且在最后： (函数实现)(参数)<br>3.无返回值： ((命名参数列表)=&gt;Unit)(参数列表)</p>
+</li>
+</ul>
+<h2 id="spark-性能小技巧"><a href="#spark-性能小技巧" class="headerlink" title="spark 性能小技巧"></a>spark 性能小技巧</h2><ul>
+<li>collect() 通常在单元测试中使用.只有当你的整个数据集能在单台机器的内存中放得下时，才能使用collect()，因此，collect() 不能用在大规模数据集上。</li>
+<li>distinct() 操作的开销很大，因为它需要将所有数据通过网络进行混洗（shuffle）</li>
+</ul>
+<h2 id="偏函数"><a href="#偏函数" class="headerlink" title="偏函数"></a>偏函数</h2><ul>
+<li>偏函数：当函数有多个参数，而在使用该函数时不想提供所有参数（比如函数有3个参数），只提供0~2个参数，此时得到的函数便是偏函数。</li>
+</ul>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 大数据 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> spark </tag>
+            
+            <tag> scala </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[我的第一篇博客：HBase]]></title>
+      <url>/2016/12/17/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/</url>
+      <content type="html"><![CDATA[<contents>
+
+<p></p><h1>hbase读写过程</h1><p></p>
+<p></p><h4>今天终于用github 和 hexo 在windows的机器上配置成功了。</h4><p></p>
+<p></p><h4>接下来会写一篇搭建过程。</h4><p></p>
+<p></p><p>对于大数据来说，hbase作为nosql数据库中的一种，而且分布式的、面向列的开源数据库。读写速度都比较快。</p><p></p>
+<h1 id="HBase-写数据"><a href="#HBase-写数据" class="headerlink" title="HBase 写数据"></a>HBase 写数据</h1><ol>
+<li>Client写入</li>
+<li>存入MemStore，一直到MemStore满</li>
+<li>Flush成一个StoreFile，直至增长到一定阈值</li>
+<li>触发Compact合并操作</li>
+<li>多个StoreFile合并成一个StoreFile，同时进行版本合并和数据删除</li>
+<li>当StoreFiles Compact后，逐步形成越来越大的StoreFile</li>
+<li>单个StoreFile大小超过一定阈值后，触发Split操作，把当前Region Split成2个Region，Region会下线，新Split出的2个孩子Region会被HMaster分配到相应的HRegionServer上，使得原先1个Region的压力得以分流到2个Region上</li>
+</ol>
+<h4 id="HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I-O高性能。"><a href="#HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I-O高性能。" class="headerlink" title="HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I/O高性能。"></a>HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I/O高性能。</h4><h5 id="HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。"><a href="#HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。" class="headerlink" title="HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。"></a><li>HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。</li></h5><h5 id="HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。"><a href="#HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。" class="headerlink" title="HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。"></a><li>HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。</li></h5><h1 id="HBase-读数据"><a href="#HBase-读数据" class="headerlink" title="HBase 读数据"></a>HBase 读数据</h1><ol>
+<li>client</li>
+<li>zookeeper</li>
+<li>.Root</li>
+<li>.META</li>
+</ol>
+<p>用户数据表zookeeper记录了.ROOT的路径信息（root只有一个region），.ROOT里记录了.META的region信息， （.META可能有多个region），.META里面记录了region的信息。</p>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> 大数据 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> HBase </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[Hello World]]></title>
+      <url>/2016/12/16/hello-world/</url>
+      <content type="html"><![CDATA[<contents>
+
+<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo new <span class="string">"My New Post"</span></div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo server</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo generate</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ hexo deploy</div></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> hexo </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> hexo </tag>
+            
+            <tag> yelee </tag>
+            
+        </tags>
+        
+    </entry>
+    
+  
+  
+    
+    <entry>
+      <title><![CDATA[归档]]></title>
+      <url>/archive/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[about me]]></title>
+      <url>/about/index.html</url>
+      <content type="html"><![CDATA[<h2 id="爱打篮球的不宅技术大男孩"><a href="#爱打篮球的不宅技术大男孩" class="headerlink" title="爱打篮球的不宅技术大男孩"></a>爱打篮球的不宅技术大男孩</h2>]]></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[categories]]></title>
+      <url>/categories/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[tags]]></title>
+      <url>/tags/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+  
+</search>

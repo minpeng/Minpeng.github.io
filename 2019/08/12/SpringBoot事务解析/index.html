@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+
+    <!--[if lt IE 9]>
+        <style>body {display: none; background: none !important} </style>
+        <meta http-equiv="Refresh" Content="0; url=//outdatedbrowser.com/" />
+    <![endif]-->
+
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="author" content="min peng" />
+
+
+
+<meta name="description" content="SpringBoot事务解析">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot事务解析">
+<meta property="og:url" content="https://minpeng.github.io/2019/08/12/SpringBoot事务解析/index.html">
+<meta property="og:site_name" content="Pengm">
+<meta property="og:description" content="SpringBoot事务解析">
+<meta property="og:updated_time" content="2019-08-12T13:06:15.487Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="SpringBoot事务解析">
+<meta name="twitter:description" content="SpringBoot事务解析">
+
+<link rel="apple-touch-icon" href= "/apple-touch-icon.png">
+
+
+    <link rel="alternate" href="/atom.xml" title="Pengm" type="application/atom+xml">
+
+
+
+    <link rel="shortcut icon" href="/favicon.png">
+
+
+
+    <link href="//cdn.bootcss.com/animate.css/3.5.1/animate.min.css" rel="stylesheet">
+
+
+
+
+
+    <script src="//cdn.bootcss.com/pace/1.0.2/pace.min.js"></script>
+    <link href="//cdn.bootcss.com/pace/1.0.2/themes/blue/pace-theme-minimal.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="/css/style.css">
+
+
+
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+
+
+<title>SpringBoot事务解析 | Pengm</title>
+
+<script src="//cdn.bootcss.com/jquery/2.2.4/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+
+<script>
+    var yiliaConfig = {
+        fancybox: undefined,
+        animate: true,
+        isHome: false,
+        isPost: true,
+        isArchive: false,
+        isTag: false,
+        isCategory: false,
+        fancybox_js: "//cdn.bootcss.com/fancybox/2.1.5/jquery.fancybox.min.js",
+        scrollreveal: "//cdn.bootcss.com/scrollReveal.js/3.1.4/scrollreveal.min.js",
+        search: true
+    }
+</script>
+
+
+    <script> yiliaConfig.jquery_ui = [false]; </script>
+
+
+
+    <script> yiliaConfig.rootUrl = "\/";</script>
+
+
+
+
+
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?b3aa41a56e6fde6d00c616ac89493f29";
+            var s = document.getElementsByTagName("script")[0]; 
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+
+
+</head>
+<body>
+  <div id="container">
+    <div class="left-col">
+    <div class="overlay"></div>
+<div class="intrude-less">
+    <header id="header" class="inner">
+        <a href="/" class="profilepic">
+            <img src="/img/avatar.png" class="animated zoomIn">
+        </a>
+        <hgroup>
+          <h1 class="header-author"><a href="/">min peng</a></h1>
+        </hgroup>
+
+        
+        <p class="header-subtitle">Pengm blog</p>
+        
+
+        
+            <form id="search-form">
+            <input type="text" id="local-search-input" name="q" placeholder="search..." class="search form-control" autocomplete="off" autocorrect="off" searchonload="false" />
+            <i class="fa fa-times" onclick="resetSearch()"></i>
+            </form>
+            <div id="local-search-result"></div>
+            <p class='no-result'>No results found <i class='fa fa-spinner fa-pulse'></i></p>
+        
+
+
+        
+            <div id="switch-btn" class="switch-btn">
+                <div class="icon">
+                    <div class="icon-ctn">
+                        <div class="icon-wrap icon-house" data-idx="0">
+                            <div class="birdhouse"></div>
+                            <div class="birdhouse_holes"></div>
+                        </div>
+                        <div class="icon-wrap icon-ribbon hide" data-idx="1">
+                            <div class="ribbon"></div>
+                        </div>
+                        
+                        <div class="icon-wrap icon-link hide" data-idx="2">
+                            <div class="loopback_l"></div>
+                            <div class="loopback_r"></div>
+                        </div>
+                        
+                        
+                        <div class="icon-wrap icon-me hide" data-idx="3">
+                            <div class="user"></div>
+                            <div class="shoulder"></div>
+                        </div>
+                        
+                    </div>
+                    
+                </div>
+                <div class="tips-box hide">
+                    <div class="tips-arrow"></div>
+                    <ul class="tips-inner">
+                        <li>菜单</li>
+                        <li>标签</li>
+                        
+                        <li>友情链接</li>
+                        
+                        
+                        <li>关于我</li>
+                        
+                    </ul>
+                </div>
+            </div>
+        
+
+        <div id="switch-area" class="switch-area">
+            <div class="switch-wrap">
+                <section class="switch-part switch-part1">
+                    <nav class="header-menu">
+                        <ul>
+                        
+                            <li><a href="/">主页</a></li>
+                        
+                            <li><a href="/archives/">所有文章</a></li>
+                        
+                            <li><a href="/tags/">标签云</a></li>
+                        
+                            <li><a href="/about/">关于我</a></li>
+                        
+                        </ul>
+                    </nav>
+                    <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" href="mailto:pengmin3@163.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" href="https://github.com/minpeng" title="GitHub"></a>
+                            
+                                <a class="fa RSS" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa CSDN" href="http://blog.csdn.net/u010742049" title="CSDN"></a>
+                            
+                        </ul>
+                    </nav>
+                </section>
+                
+                
+                <section class="switch-part switch-part2">
+                    <div class="widget tagcloud" id="js-tagcloud">
+                        <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/HBase/">HBase</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Linux/">Linux</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mysql/">Mysql</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/SpringBoot/">SpringBoot</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/angular/">angular</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/hexo/">hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java/">java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/memcahce/">memcahce</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/python/">python</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/quill/">quill</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scala/">scala</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/scrapy/">scrapy</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/shiro/">shiro</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spark/">spark</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/spring/">spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/yelee/">yelee</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/系统架构/">系统架构</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/读书笔记/">读书笔记</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/随笔/">随笔</a></li></ul>
+                    </div>
+                </section>
+                
+                
+                
+                <section class="switch-part switch-part3">
+                    <div id="js-friends">
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://hexo.io">Hexo</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="https://pages.github.com/">GitHub</a>
+                    
+                      <a class="main-nav-link switch-friends-link" href="http://moxfive.xyz/">MOxFIVE</a>
+                    
+                    </div>
+                </section>
+                
+
+                
+                
+                <section class="switch-part switch-part4">
+                
+                    <div id="js-aboutme">一个爱运动不是太宅的技术大男孩</div>
+                </section>
+                
+            </div>
+        </div>
+    </header>                
+</div>
+    </div>
+    <div class="mid-col">
+      <nav id="mobile-nav">
+      <div class="overlay">
+          <div class="slider-trigger"></div>
+          <h1 class="header-author js-mobile-header hide"><a href="/" title="回到主页">min peng</a></h1>
+      </div>
+    <div class="intrude-less">
+        <header id="header" class="inner">
+            <a href="/" class="profilepic">
+                <img src="/img/avatar.png" class="animated zoomIn">
+            </a>
+            <hgroup>
+              <h1 class="header-author"><a href="/" title="回到主页">min peng</a></h1>
+            </hgroup>
+            
+            <p class="header-subtitle">Pengm blog</p>
+            
+            <nav class="header-menu">
+                <ul>
+                
+                    <li><a href="/">主页</a></li>
+                
+                    <li><a href="/archives/">所有文章</a></li>
+                
+                    <li><a href="/tags/">标签云</a></li>
+                
+                    <li><a href="/about/">关于我</a></li>
+                
+                <div class="clearfix"></div>
+                </ul>
+            </nav>
+            <nav class="header-nav">
+                        <ul class="social">
+                            
+                                <a class="fa Email" target="_blank" href="mailto:pengmin3@163.com" title="Email"></a>
+                            
+                                <a class="fa GitHub" target="_blank" href="https://github.com/minpeng" title="GitHub"></a>
+                            
+                                <a class="fa RSS" target="_blank" href="/atom.xml" title="RSS"></a>
+                            
+                                <a class="fa CSDN" target="_blank" href="http://blog.csdn.net/u010742049" title="CSDN"></a>
+                            
+                        </ul>
+            </nav>
+        </header>                
+    </div>
+    <link class="menu-list" tags="标签" friends="友情链接" about="关于我"/>
+</nav>
+      <div class="body-wrap"><article id="post-SpringBoot事务解析" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2019/08/12/SpringBoot事务解析/" class="article-date">
+      <time datetime="2019-08-12T12:55:49.000Z" itemprop="datePublished">2019-08-12</time>
+</a>
+
+
+    </div>
+  
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      SpringBoot事务解析
+    </h1>
+  
+
+      </header>
+      
+      <div class="article-info article-info-post">
+        
+    <div class="article-category tagcloud">
+    <a class="article-category-link" href="/categories/SpringBoot/">SpringBoot</a>
+    </div>
+
+
+        
+    <div class="article-tag tagcloud">
+        <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/SpringBoot/">SpringBoot</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/java/">java</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/spring/">spring</a></li></ul>
+    </div>
+
+        <div class="clearfix"></div>
+      </div>
+      
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+          
+        <contents>
+
+<h2 id="SpringBoot事务详解"><a href="#SpringBoot事务详解" class="headerlink" title="SpringBoot事务详解"></a>SpringBoot事务详解</h2><blockquote>
+<p>SpringBoot-2.1.3.RELEASE版本事务解析</p>
+</blockquote>
+<h3 id="1-spring事务猜想"><a href="#1-spring事务猜想" class="headerlink" title="1.spring事务猜想"></a>1.spring事务猜想</h3><blockquote>
+<p>使用切面再方法执行前开启事务，执行完提交事务，如果有异常，则回滚事务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">## Mysql事务流程</div><div class="line"></div><div class="line">##1.开启事务</div><div class="line">begin; </div><div class="line">##2.提交事务</div><div class="line">commit;</div><div class="line">##3.如果有异常需要回滚事务</div><div class="line">rollback；</div></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// jdbc使用事务流程</span></div><div class="line"></div><div class="line"><span class="comment">//1.获取连接</span></div><div class="line">Connection conn = DataSourceUtils.getConnection();</div><div class="line"><span class="comment">//2.开启事务</span></div><div class="line">conn.setAutoCommit(<span class="keyword">false</span>);</div><div class="line"><span class="keyword">try</span> &#123;</div><div class="line">    <span class="comment">//3.执行业务sql操作</span></div><div class="line">   	doSomething(conn);</div><div class="line">    <span class="comment">//4.提交事务</span></div><div class="line">    conn.commit();</div><div class="line">&#125;<span class="keyword">catch</span> (Exception e) &#123;</div><div class="line">    <span class="comment">//回滚事务</span></div><div class="line">    conn.rollback();</div><div class="line">&#125;<span class="keyword">finally</span> &#123;</div><div class="line">    conn.close();</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="2-spring注解-transactional"><a href="#2-spring注解-transactional" class="headerlink" title="2.spring注解@transactional"></a>2.spring注解@transactional</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Transactional &#123;</div><div class="line">    <span class="comment">//当在配置文件中有多个 TransactionManager , 可以用该属性指定选择哪个事务管理器</span></div><div class="line">    <span class="meta">@AliasFor</span>(<span class="string">"transactionManager"</span>)</div><div class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</div><div class="line"></div><div class="line">    <span class="meta">@AliasFor</span>(<span class="string">"value"</span>)</div><div class="line">    <span class="function">String <span class="title">transactionManager</span><span class="params">()</span> <span class="keyword">default</span> ""</span>;</div><div class="line">	<span class="comment">//事务传播机制</span></div><div class="line">    <span class="function">Propagation <span class="title">propagation</span><span class="params">()</span> <span class="keyword">default</span> Propagation.REQUIRED</span>;</div><div class="line">	<span class="comment">//事务隔离级别</span></div><div class="line">    <span class="function">Isolation <span class="title">isolation</span><span class="params">()</span> <span class="keyword">default</span> Isolation.DEFAULT</span>;</div><div class="line">	<span class="comment">//超时时间</span></div><div class="line">    <span class="comment">//如果超过该时间限制但事务还没有完成，则自动回滚事务。</span></div><div class="line">    <span class="function"><span class="keyword">int</span> <span class="title">timeout</span><span class="params">()</span> <span class="keyword">default</span> -1</span>;</div><div class="line">	<span class="comment">//事务只读</span></div><div class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">readOnly</span><span class="params">()</span> <span class="keyword">default</span> <span class="keyword">false</span></span>;</div><div class="line">	<span class="comment">//用于指定能够触发事务回滚的异常类型，如果有多个异常类型需要指定，各类型之间可以通过逗号分隔</span></div><div class="line">    Class&lt;? extends Throwable&gt;[] rollbackFor() <span class="keyword">default</span> &#123;&#125;;</div><div class="line"></div><div class="line">    String[] rollbackForClassName() <span class="keyword">default</span> &#123;&#125;;</div><div class="line">	<span class="comment">//抛出 no-rollback-for 指定的异常类型，不回滚事务。</span></div><div class="line">    Class&lt;? extends Throwable&gt;[] noRollbackFor() <span class="keyword">default</span> &#123;&#125;;</div><div class="line"></div><div class="line">    String[] noRollbackForClassName() <span class="keyword">default</span> &#123;&#125;;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h4 id="3-spring执行-transactional"><a href="#3-spring执行-transactional" class="headerlink" title="3.spring执行@transactional"></a>3.spring执行@transactional</h4><blockquote>
+<p>一个事务方法执行流程</p>
+</blockquote>
+<ul>
+<li><p>获取事务属性</p>
+</li>
+<li><p>获取事务管理器</p>
+</li>
+<li><p>获取需要事务的方法名称/获取该方法上事务的信息</p>
+</li>
+<li><p>目标方法执行</p>
+</li>
+<li><p>清除事务信息</p>
+</li>
+<li><p>事务回滚</p>
+</li>
+<li><p>事务提交</p>
+</li>
+</ul>
+<blockquote>
+<p>事务执行方法TransactionAspectSupport</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionAspectSupport</span> <span class="keyword">implements</span> <span class="title">BeanFactoryAware</span>, <span class="title">InitializingBean</span> </span>&#123;</div><div class="line">   <span class="meta">@Nullable</span></div><div class="line">    <span class="function"><span class="keyword">protected</span> Object <span class="title">invokeWithinTransaction</span><span class="params">(Method method, @Nullable Class&lt;?&gt; targetClass, TransactionAspectSupport.InvocationCallback invocation)</span> <span class="keyword">throws</span> Throwable </span>&#123;</div><div class="line">        <span class="comment">// 读取事务的属性和设置</span></div><div class="line">        TransactionAttributeSource tas = <span class="keyword">this</span>.getTransactionAttributeSource();</div><div class="line">        TransactionAttribute txAttr = tas != <span class="keyword">null</span> ? tas.getTransactionAttribute(method, targetClass) : <span class="keyword">null</span>;</div><div class="line">        <span class="comment">// 获取 beanFactory 中的 transactionManager</span></div><div class="line">        PlatformTransactionManager tm = <span class="keyword">this</span>.determineTransactionManager(txAttr);</div><div class="line">        String joinpointIdentification = <span class="keyword">this</span>.methodIdentification(method, targetClass, txAttr);</div><div class="line">        Object result;</div><div class="line">        <span class="comment">//编程式事务（需要加入处理事务逻辑，需要显示调用事务方法）</span></div><div class="line">        <span class="keyword">if</span> (txAttr != <span class="keyword">null</span> &amp;&amp; tm <span class="keyword">instanceof</span> CallbackPreferringPlatformTransactionManager) &#123;</div><div class="line">            TransactionAspectSupport.ThrowableHolder throwableHolder = <span class="keyword">new</span> TransactionAspectSupport.ThrowableHolder();</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                result = ((CallbackPreferringPlatformTransactionManager)tm).execute(txAttr, (status) -&gt; &#123;</div><div class="line">                   </div><div class="line">                    TransactionAspectSupport.TransactionInfo txInfo = <span class="keyword">this</span>.prepareTransactionInfo(tm, txAttr, joinpointIdentification, status);</div><div class="line"></div><div class="line">                    Object var9;</div><div class="line">                    <span class="keyword">try</span> &#123;</div><div class="line">                        <span class="comment">//目标方法执行</span></div><div class="line">                        Object var8 = invocation.proceedWithInvocation();</div><div class="line">                        <span class="keyword">return</span> var8;</div><div class="line">                    &#125; <span class="keyword">catch</span> (Throwable var13) &#123;</div><div class="line">                        <span class="keyword">if</span> (txAttr.rollbackOn(var13)) &#123;</div><div class="line">                            <span class="keyword">if</span> (var13 <span class="keyword">instanceof</span> RuntimeException) &#123;</div><div class="line">                                <span class="keyword">throw</span> (RuntimeException)var13;</div><div class="line">                            &#125;</div><div class="line"></div><div class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> TransactionAspectSupport.ThrowableHolderException(var13);</div><div class="line">                        &#125;</div><div class="line"></div><div class="line">                        throwableHolder.throwable = var13;</div><div class="line">                        var9 = <span class="keyword">null</span>;</div><div class="line">                    &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                        <span class="comment">//清除事务信息</span></div><div class="line">                        <span class="keyword">this</span>.cleanupTransactionInfo(txInfo);</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    <span class="keyword">return</span> var9;</div><div class="line">                &#125;);</div><div class="line">                <span class="keyword">if</span> (throwableHolder.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">throw</span> throwableHolder.throwable;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="keyword">return</span> result;</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">catch</span> (TransactionAspectSupport.ThrowableHolderException var19) &#123;</div><div class="line">                <span class="keyword">throw</span> var19.getCause();</div><div class="line">            &#125; <span class="keyword">catch</span> (TransactionSystemException var20) &#123;</div><div class="line">                <span class="keyword">if</span> (throwableHolder.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.error(<span class="string">"Application exception overridden by commit exception"</span>, throwableHolder.throwable);</div><div class="line">                    var20.initApplicationException(throwableHolder.throwable);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">throw</span> var20;</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable var21) &#123;</div><div class="line">                <span class="keyword">if</span> (throwableHolder.throwable != <span class="keyword">null</span>) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.error(<span class="string">"Application exception overridden by commit exception"</span>, throwableHolder.throwable);</div><div class="line">                &#125;</div><div class="line"></div><div class="line">                <span class="keyword">throw</span> var21;</div><div class="line">            &#125;</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">// 声明式事务</span></div><div class="line">            <span class="comment">// 构建事务相关信息</span></div><div class="line">            TransactionAspectSupport.TransactionInfo txInfo = <span class="keyword">this</span>.createTransactionIfNecessary(tm, txAttr, joinpointIdentification);</div><div class="line">            result = <span class="keyword">null</span>;</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                result = invocation.proceedWithInvocation();</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable var17) &#123;</div><div class="line">               <span class="comment">// 如果出现异常，则进行回滚</span></div><div class="line">                <span class="keyword">this</span>.completeTransactionAfterThrowing(txInfo, var17);</div><div class="line">                <span class="keyword">throw</span> var17;</div><div class="line">            &#125; <span class="keyword">finally</span> &#123;</div><div class="line">                <span class="keyword">this</span>.cleanupTransactionInfo(txInfo);</div><div class="line">            &#125;</div><div class="line">			 <span class="comment">// 这里通过事务处理器来对事务进行提交</span></div><div class="line">            <span class="keyword">this</span>.commitTransactionAfterReturning(txInfo);</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        &#125;</div><div class="line">    &#125; </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="4-spring事务常量"><a href="#4-spring事务常量" class="headerlink" title="4.spring事务常量"></a>4.spring事务常量</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TransactionDefinition</span> </span>&#123;</div><div class="line">	<span class="comment">//传播性</span></div><div class="line">    </div><div class="line">	<span class="comment">//如果当前没有事务，就新建一个事务，如果已经存在一个事务中，加入到这个事务中。默认为这个</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_REQUIRED = <span class="number">0</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//支持当前事务，如果当前没有事务，就以非事务方式执行</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_SUPPORTS = <span class="number">1</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//使用当前的事务，如果当前没有事务，就抛出异常。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_MANDATORY = <span class="number">2</span>;</div><div class="line">    </div><div class="line">	<span class="comment">//新建事务，如果当前存在事务，把当前事务挂起。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_REQUIRES_NEW = <span class="number">3</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//以非事务方式执行操作，如果当前存在事务，就把当前事务挂起。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_NOT_SUPPORTED = <span class="number">4</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//以非事务方式执行，如果当前存在事务，则抛出异常。</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_NEVER = <span class="number">5</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//如果当前存在事务，则在嵌套事务内执行。如果当前没有事务，则执行与PROPAGATION_REQUIRED类似的操作</span></div><div class="line">    <span class="keyword">int</span> PROPAGATION_NESTED = <span class="number">6</span>;</div><div class="line">    </div><div class="line">    <span class="comment">//隔离级别</span></div><div class="line">    <span class="comment">//使用数据库默认的隔离级别-可重复读的</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_DEFAULT = -<span class="number">1</span>;</div><div class="line">    <span class="comment">//允许读取尚未提交的更改。可能导致脏读、幻影读或不可重复读</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_READ_UNCOMMITTED = <span class="number">1</span>;</div><div class="line">    <span class="comment">//允许从已经提交的并发事务读取。可防止脏读，但幻影读和不可重复读仍可能会发生。</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_READ_COMMITTED = <span class="number">2</span>;</div><div class="line">    <span class="comment">//对相同字段的多次读取的结果是一致的，除非数据被当前事务本身改变。可防止脏读和不可重复读，但幻影读仍可能发生</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_REPEATABLE_READ = <span class="number">4</span>;</div><div class="line">    <span class="comment">//完全服从ACID的隔离级别，确保不发生脏读、不可重复读和幻影读。这在所有隔离级别中也是最慢的，因为它通常是通过完全锁定当前事务所涉及的数据表来完成的。</span></div><div class="line">    <span class="keyword">int</span> ISOLATION_SERIALIZABLE = <span class="number">8</span>;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<h3 id="5-spring事务管理接口"><a href="#5-spring事务管理接口" class="headerlink" title="5. spring事务管理接口"></a>5. spring事务管理接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//平台事务管理接口</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">PlatformTransactionManager</span> </span>&#123;</div><div class="line">    <span class="comment">//获取事务状态</span></div><div class="line">    <span class="function">TransactionStatus <span class="title">getTransaction</span><span class="params">(@Nullable TransactionDefinition var1)</span> <span class="keyword">throws</span> TransactionException</span>;</div><div class="line">	<span class="comment">//提交事务</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">commit</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</div><div class="line">	<span class="comment">//回滚事务</span></div><div class="line">    <span class="function"><span class="keyword">void</span> <span class="title">rollback</span><span class="params">(TransactionStatus var1)</span> <span class="keyword">throws</span> TransactionException</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="6-事务状态TransactionStatus"><a href="#6-事务状态TransactionStatus" class="headerlink" title="6.事务状态TransactionStatus"></a>6.事务状态TransactionStatus</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultTransactionStatus</span> <span class="keyword">extends</span> <span class="title">AbstractTransactionStatus</span> </span>&#123;</div><div class="line">   </div><div class="line">    <span class="meta">@Nullable</span></div><div class="line">    <span class="comment">// 事务连接器</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object transaction;</div><div class="line">    <span class="comment">// 是否是新事务</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> newTransaction;</div><div class="line">    <span class="comment">// 是否开启 事务同步器</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> newSynchronization;</div><div class="line">    <span class="comment">// 这个事务是否是 readOnly</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> readOnly;</div><div class="line">    <span class="comment">//是否debug模式</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">boolean</span> debug;</div><div class="line">    <span class="meta">@Nullable</span></div><div class="line">    <span class="comment">//事务是否需要挂起</span></div><div class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object suspendedResources;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="7-spring事务管理实现类-AbstractPlatformTransactionManager"><a href="#7-spring事务管理实现类-AbstractPlatformTransactionManager" class="headerlink" title="7.spring事务管理实现类 -AbstractPlatformTransactionManager"></a>7.spring事务管理实现类 -AbstractPlatformTransactionManager</h3><ul>
+<li>getTransaction()方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">final</span> TransactionStatus <span class="title">getTransaction</span><span class="params">(@Nullable TransactionDefinition definition)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">        Object transaction = <span class="keyword">this</span>.doGetTransaction();</div><div class="line">        <span class="keyword">boolean</span> debugEnabled = <span class="keyword">this</span>.logger.isDebugEnabled();</div><div class="line">        <span class="keyword">if</span> (definition == <span class="keyword">null</span>) &#123;</div><div class="line">            definition = <span class="keyword">new</span> DefaultTransactionDefinition();</div><div class="line">        &#125;</div><div class="line">		<span class="comment">// 如果当前已经存在事务</span></div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.isExistingTransaction(transaction)) &#123;</div><div class="line">            <span class="comment">// 根据不同传播机制不同处理</span></div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.handleExistingTransaction((TransactionDefinition)definition, transaction, debugEnabled);</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (((TransactionDefinition)definition).getTimeout() &lt; -<span class="number">1</span>) &#123;</div><div class="line">            <span class="comment">// 超时不能小于-1</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> InvalidTimeoutException(<span class="string">"Invalid transaction timeout"</span>, ((TransactionDefinition)definition).getTimeout());</div><div class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (((TransactionDefinition)definition).getPropagationBehavior() == <span class="number">2</span>) &#123;</div><div class="line">           <span class="comment">// 当前不存在事务，传播机制=MANDATORY（支持当前事务，没事务报错），报错</span></div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"No existing transaction found for transaction marked with propagation 'mandatory'"</span>);</div><div class="line">        &#125; </div><div class="line">    <span class="comment">//// 当前不存在事务，传播机制=REQUIRED/REQUIRED_NEW/NESTED,这三种情况，需要新开启事务，且加上事务同步</span></div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (((TransactionDefinition)definition).getPropagationBehavior() != <span class="number">0</span> &amp;&amp; ((TransactionDefinition)definition).getPropagationBehavior() != <span class="number">3</span> &amp;&amp; ((TransactionDefinition)definition).getPropagationBehavior() != <span class="number">6</span>) &#123;</div><div class="line">        <span class="comment">//事务隔离级别不是默认的</span></div><div class="line">            <span class="keyword">if</span> (((TransactionDefinition)definition).getIsolationLevel() != -<span class="number">1</span> &amp;&amp; <span class="keyword">this</span>.logger.isWarnEnabled()) &#123;</div><div class="line">                <span class="keyword">this</span>.logger.warn(<span class="string">"Custom isolation level specified but no actual transaction initiated; isolation level will effectively be ignored: "</span> + definition);</div><div class="line">            &#125;</div><div class="line">			<span class="comment">//是否需要新开启同步</span></div><div class="line">            <span class="keyword">boolean</span> newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() == <span class="number">0</span>;</div><div class="line">            <span class="keyword">return</span> <span class="keyword">this</span>.prepareTransactionStatus((TransactionDefinition)definition, (Object)<span class="keyword">null</span>, <span class="keyword">true</span>, newSynchronization, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            AbstractPlatformTransactionManager.SuspendedResourcesHolder suspendedResources = <span class="keyword">this</span>.suspend((Object)<span class="keyword">null</span>);</div><div class="line">            <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                <span class="keyword">this</span>.logger.debug(<span class="string">"Creating new transaction with name ["</span> + ((TransactionDefinition)definition).getName() + <span class="string">"]: "</span> + definition);</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                </div><div class="line">                <span class="comment">//public static final int SYNCHRONIZATION_NEVER = 2;</span></div><div class="line"> 				<span class="comment">//2的含义：永不开启同步              </span></div><div class="line">                <span class="keyword">boolean</span> newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;</div><div class="line">                DefaultTransactionStatus status = <span class="keyword">this</span>.newTransactionStatus((TransactionDefinition)definition, transaction, <span class="keyword">true</span>, newSynchronization, debugEnabled, suspendedResources);</div><div class="line">                <span class="comment">// 开启新事务</span></div><div class="line">                <span class="keyword">this</span>.doBegin(transaction, (TransactionDefinition)definition);</div><div class="line">                <span class="comment">//预备同步</span></div><div class="line">                <span class="keyword">this</span>.prepareSynchronization(status, (TransactionDefinition)definition);</div><div class="line">                <span class="keyword">return</span> status;</div><div class="line">            &#125; <span class="keyword">catch</span> (Error | RuntimeException var7) &#123;</div><div class="line">                <span class="keyword">this</span>.resume((Object)<span class="keyword">null</span>, suspendedResources);</div><div class="line">                <span class="keyword">throw</span> var7;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>handleExistingTransaction存在事务之后处理方法(根据事务传播级别)</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> TransactionStatus <span class="title">handleExistingTransaction</span><span class="params">(TransactionDefinition definition, Object transaction, <span class="keyword">boolean</span> debugEnabled)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">    <span class="comment">// 如果当前已经存在事务, 且当前事务的传播属性设置为 PROPAGATION_NEVER（5）, 那么抛出异常    </span></div><div class="line">    <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">5</span>) &#123;</div><div class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"Existing transaction found for transaction marked with propagation 'never'"</span>);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            AbstractPlatformTransactionManager.SuspendedResourcesHolder suspendedResources;</div><div class="line">            <span class="keyword">boolean</span> newSynchronization;</div><div class="line">        </div><div class="line">        <span class="comment">// 如果当前事务的配置属性是 PROPAGATION_NOT_SUPPORTED（4）, 同时当前线程已经存在事务了, 那么将事务挂起</span></div><div class="line">            <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">4</span>) &#123;</div><div class="line">                <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.debug(<span class="string">"Suspending current transaction"</span>);</div><div class="line">                &#125;</div><div class="line">				<span class="comment">// 将事务的挂起</span></div><div class="line">                suspendedResources = <span class="keyword">this</span>.suspend(transaction);</div><div class="line">                <span class="comment">// 是否开启一个新的事务同步器</span></div><div class="line">                newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() == <span class="number">0</span>;</div><div class="line">                <span class="comment">//// 意味着事务方法不需要放在事务环境中执行, 同时挂起事务的信息保存在 TransactionStatus 中, 用ThreadLocal来记录</span></div><div class="line">                <span class="keyword">return</span> <span class="keyword">this</span>.prepareTransactionStatus(definition, (Object)<span class="keyword">null</span>, <span class="keyword">false</span>, newSynchronization, debugEnabled, suspendedResources);</div><div class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">3</span>) &#123;</div><div class="line">                <span class="comment">// 如果当前事务的配置属性是 PROPAGATION_REQUIRES_NEW（3）, 创建新事务, 同时将当前线程存在的事务挂起, 与创建全新事务的过程类是, 区别在于在创建全新事务时不用考虑已有事务的挂起, 但在这里, 需要考虑已有事务的挂起</span></div><div class="line">                <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                    <span class="keyword">this</span>.logger.debug(<span class="string">"Suspending current transaction, creating new transaction with name ["</span> + definition.getName() + <span class="string">"]"</span>);</div><div class="line">                &#125;</div><div class="line">				<span class="comment">//挂起事务</span></div><div class="line">                suspendedResources = <span class="keyword">this</span>.suspend(transaction);</div><div class="line"></div><div class="line">                <span class="keyword">try</span> &#123;</div><div class="line">                    <span class="comment">// 是否开启一个新的事务同步器</span></div><div class="line">                    newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;</div><div class="line">                    <span class="comment">//  挂起事务的信息记录保存在 TransactionStatus 中,</span></div><div class="line">                    DefaultTransactionStatus status = <span class="keyword">this</span>.newTransactionStatus(definition, transaction, <span class="keyword">true</span>, newSynchronization, debugEnabled, suspendedResources);</div><div class="line">                    <span class="comment">// 构造 transaction, 包括设置 ConnectionHolder, 隔离级别, timeout, 如果是新连接, 绑定到当前线程</span></div><div class="line">                    <span class="keyword">this</span>.doBegin(transaction, definition);</div><div class="line">                    <span class="comment">// 新同步事务的设置, 针对当前线程的设置</span></div><div class="line">                    <span class="keyword">this</span>.prepareSynchronization(status, definition);</div><div class="line">                    <span class="keyword">return</span> status;</div><div class="line">                &#125; <span class="keyword">catch</span> (Error | RuntimeException var7) &#123;</div><div class="line">                    <span class="comment">// 抛出异常，恢复刚才挂起的事务</span></div><div class="line">                    <span class="keyword">this</span>.resumeAfterBeginException(transaction, suspendedResources, var7);</div><div class="line">                    <span class="keyword">throw</span> var7;</div><div class="line">                &#125;</div><div class="line">            &#125; <span class="keyword">else</span> &#123;</div><div class="line">               </div><div class="line">                <span class="keyword">boolean</span> newSynchronization;</div><div class="line">                <span class="comment">// 如果当前事务的配置属性是 PROPAGATION_NOT_SUPPORTED（6）嵌套事务，创建 TransactionStatus, 创建保存点</span></div><div class="line">                <span class="keyword">if</span> (definition.getPropagationBehavior() == <span class="number">6</span>) &#123;</div><div class="line">                    <span class="keyword">if</span> (!<span class="keyword">this</span>.isNestedTransactionAllowed()) &#123;</div><div class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> NestedTransactionNotSupportedException(<span class="string">"Transaction manager does not allow nested transactions by default - specify 'nestedTransactionAllowed' property with value 'true'"</span>);</div><div class="line">                    &#125; <span class="keyword">else</span> &#123;</div><div class="line">                        <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                            <span class="keyword">this</span>.logger.debug(<span class="string">"Creating nested transaction with name ["</span> + definition.getName() + <span class="string">"]"</span>);</div><div class="line">                        &#125;</div><div class="line">						<span class="comment">// 如果没有可以使用保存点的方式控制事务回滚, 那么在嵌套式事务的建立初始建立保存点</span></div><div class="line">                        <span class="keyword">if</span> (<span class="keyword">this</span>.useSavepointForNestedTransaction()) &#123;</div><div class="line">                            <span class="comment">// 在 Spring 管理的事务中, 创建事务保存点</span></div><div class="line">                            DefaultTransactionStatus status = <span class="keyword">this</span>.prepareTransactionStatus(definition, transaction, <span class="keyword">false</span>, <span class="keyword">false</span>, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">                            status.createAndHoldSavepoint();</div><div class="line">                            <span class="keyword">return</span> status;</div><div class="line">                        &#125; <span class="keyword">else</span> </div><div class="line">                            <span class="comment">// 有些情况是不能使用保存点操作, 比如 JTA, 那么就建立新事务</span></div><div class="line">                            newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;							</div><div class="line">                            DefaultTransactionStatus status = <span class="keyword">this</span>.newTransactionStatus(definition, transaction, <span class="keyword">true</span>, newSynchronization, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">                            <span class="keyword">this</span>.doBegin(transaction, definition);</div><div class="line">                            <span class="keyword">this</span>.prepareSynchronization(status, definition);</div><div class="line">                            <span class="keyword">return</span> status;</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line">                &#125; <span class="keyword">else</span> &#123;</div><div class="line">                    <span class="keyword">if</span> (debugEnabled) &#123;</div><div class="line">                        <span class="keyword">this</span>.logger.debug(<span class="string">"Participating in existing transaction"</span>);</div><div class="line">                    &#125;</div><div class="line">					<span class="comment">// 对已经存在的事务的属性进行校验</span></div><div class="line">                    <span class="keyword">if</span> (<span class="keyword">this</span>.isValidateExistingTransaction()) &#123;</div><div class="line">                        <span class="comment">// 隔离级别的校验,TransactionDefinition 与 TransactionSynchronizationManager 中的值是否一致</span></div><div class="line">                        <span class="keyword">if</span> (definition.getIsolationLevel() != -<span class="number">1</span>) &#123;</div><div class="line">                            Integer currentIsolationLevel = TransactionSynchronizationManager.getCurrentTransactionIsolationLevel();</div><div class="line">                            <span class="keyword">if</span> (currentIsolationLevel == <span class="keyword">null</span> || currentIsolationLevel != definition.getIsolationLevel()) &#123;</div><div class="line">                                Constants isoConstants = DefaultTransactionDefinition.constants;</div><div class="line">                                <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"Participating transaction with definition ["</span> + definition + <span class="string">"] specifies isolation level which is incompatible with existing transaction: "</span> + (currentIsolationLevel != <span class="keyword">null</span> ? isoConstants.toCode(currentIsolationLevel, <span class="string">"ISOLATION_"</span>) : <span class="string">"(unknown)"</span>));</div><div class="line">                            &#125;</div><div class="line">                        &#125;</div><div class="line">						<span class="comment">// readOnly 的校验 </span></div><div class="line">                        <span class="keyword">if</span> (!definition.isReadOnly() &amp;&amp; TransactionSynchronizationManager.isCurrentTransactionReadOnly()) &#123;</div><div class="line">                            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalTransactionStateException(<span class="string">"Participating transaction with definition ["</span> + definition + <span class="string">"] is not marked as read-only but existing transaction is"</span>);</div><div class="line">                        &#125;</div><div class="line">                    &#125;</div><div class="line"></div><div class="line">                    newSynchronization = <span class="keyword">this</span>.getTransactionSynchronization() != <span class="number">2</span>;</div><div class="line">                   <span class="comment">// 返回 TransactionStatus 注意第三个参数 false 表示 当前事务没有使用新事务</span></div><div class="line">                    <span class="keyword">return</span> <span class="keyword">this</span>.prepareTransactionStatus(definition, transaction, <span class="keyword">false</span>, newSynchronization, debugEnabled, (Object)<span class="keyword">null</span>);</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">    &#125;</div></pre></td></tr></table></figure>
+<ul>
+<li>提交事务方法</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processCommit</span><span class="params">(DefaultTransactionStatus status)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">       <span class="keyword">try</span> &#123;</div><div class="line">           <span class="keyword">boolean</span> beforeCompletionInvoked = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="keyword">boolean</span> unexpectedRollback = <span class="keyword">false</span>;</div><div class="line">               <span class="keyword">this</span>.prepareForCommit(status);</div><div class="line">               <span class="keyword">this</span>.triggerBeforeCommit(status);</div><div class="line">               <span class="keyword">this</span>.triggerBeforeCompletion(status);</div><div class="line">               beforeCompletionInvoked = <span class="keyword">true</span>;</div><div class="line">               </div><div class="line">               <span class="comment">// 如果有保存点（嵌套事务），清除保存点信息</span></div><div class="line">               <span class="keyword">if</span> (status.hasSavepoint()) &#123;</div><div class="line">                   <span class="keyword">if</span> (status.isDebug()) &#123;</div><div class="line">                       <span class="keyword">this</span>.logger.debug(<span class="string">"Releasing transaction savepoint"</span>);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   unexpectedRollback = status.isGlobalRollbackOnly();</div><div class="line">                   <span class="comment">//清除保存点信息</span></div><div class="line">                   status.releaseHeldSavepoint();</div><div class="line">               &#125; <span class="keyword">else</span> <span class="keyword">if</span> (status.isNewTransaction()) &#123;</div><div class="line">                   <span class="comment">// 若是新事务, 则直接提交</span></div><div class="line">                   <span class="keyword">if</span> (status.isDebug()) &#123;</div><div class="line">                       <span class="keyword">this</span>.logger.debug(<span class="string">"Initiating transaction commit"</span>);</div><div class="line">                   &#125;</div><div class="line"></div><div class="line">                   unexpectedRollback = status.isGlobalRollbackOnly();</div><div class="line">                   <span class="comment">//提交</span></div><div class="line">                   <span class="keyword">this</span>.doCommit(status);</div><div class="line">               &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">this</span>.isFailEarlyOnGlobalRollbackOnly()) &#123;</div><div class="line">                   unexpectedRollback = status.isGlobalRollbackOnly();</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">if</span> (unexpectedRollback) &#123;</div><div class="line">                   <span class="keyword">throw</span> <span class="keyword">new</span> UnexpectedRollbackException(<span class="string">"Transaction silently rolled back because it has been marked as rollback-only"</span>);</div><div class="line">               &#125;</div><div class="line">           &#125; <span class="keyword">catch</span> (UnexpectedRollbackException var17) &#123;</div><div class="line">               <span class="keyword">this</span>.triggerAfterCompletion(status, <span class="number">1</span>);</div><div class="line">               <span class="keyword">throw</span> var17;</div><div class="line">           &#125; <span class="keyword">catch</span> (TransactionException var18) &#123;</div><div class="line">               <span class="keyword">if</span> (<span class="keyword">this</span>.isRollbackOnCommitFailure()) &#123;</div><div class="line">                   <span class="comment">//回滚</span></div><div class="line">                   <span class="keyword">this</span>.doRollbackOnCommitException(status, var18);</div><div class="line">               &#125; <span class="keyword">else</span> &#123;</div><div class="line">                   <span class="keyword">this</span>.triggerAfterCompletion(status, <span class="number">2</span>);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">throw</span> var18;</div><div class="line">           &#125; <span class="keyword">catch</span> (Error | RuntimeException var19) &#123;</div><div class="line">               <span class="keyword">if</span> (!beforeCompletionInvoked) &#123;</div><div class="line">                   <span class="keyword">this</span>.triggerBeforeCompletion(status);</div><div class="line">               &#125;</div><div class="line"></div><div class="line">               <span class="keyword">this</span>.doRollbackOnCommitException(status, var19);</div><div class="line">               <span class="keyword">throw</span> var19;</div><div class="line">           &#125;</div><div class="line"></div><div class="line">           <span class="keyword">try</span> &#123;</div><div class="line">               <span class="keyword">this</span>.triggerAfterCommit(status);</div><div class="line">           &#125; <span class="keyword">finally</span> &#123;</div><div class="line">               <span class="keyword">this</span>.triggerAfterCompletion(status, <span class="number">0</span>);</div><div class="line">           &#125;</div><div class="line">       &#125; <span class="keyword">finally</span> &#123;</div><div class="line">           <span class="keyword">this</span>.cleanupAfterCompletion(status);</div><div class="line">       &#125;</div><div class="line"></div><div class="line">   &#125;</div></pre></td></tr></table></figure>
+<h3 id="8-spring事务管理模板方法"><a href="#8-spring事务管理模板方法" class="headerlink" title="8.spring事务管理模板方法"></a>8.spring事务管理模板方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//模板方法</span></div><div class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionTemplate</span> <span class="keyword">extends</span> <span class="title">DefaultTransactionDefinition</span> <span class="keyword">implements</span> <span class="title">TransactionOperations</span>, <span class="title">InitializingBean</span> </span>&#123;</div><div class="line">    </div><div class="line">       <span class="meta">@Nullable</span></div><div class="line">    <span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">execute</span><span class="params">(TransactionCallback&lt;T&gt; action)</span> <span class="keyword">throws</span> TransactionException </span>&#123;</div><div class="line">        Assert.state(<span class="keyword">this</span>.transactionManager != <span class="keyword">null</span>, <span class="string">"No PlatformTransactionManager set"</span>);</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.transactionManager <span class="keyword">instanceof</span> CallbackPreferringPlatformTransactionManager) &#123;</div><div class="line">            <span class="keyword">return</span> ((CallbackPreferringPlatformTransactionManager)<span class="keyword">this</span>.transactionManager).execute(<span class="keyword">this</span>, action);</div><div class="line">        &#125; <span class="keyword">else</span> &#123;</div><div class="line">            <span class="comment">//1.获取事务状态</span></div><div class="line">            TransactionStatus status = <span class="keyword">this</span>.transactionManager.getTransaction(<span class="keyword">this</span>);</div><div class="line"></div><div class="line">            Object result;</div><div class="line">            <span class="keyword">try</span> &#123;</div><div class="line">                 <span class="comment">// 2.执行业务逻辑</span></div><div class="line">                result = action.doInTransaction(status);</div><div class="line">            &#125; <span class="keyword">catch</span> (Error | RuntimeException var5) &#123;</div><div class="line">                <span class="comment">////事务回滚</span></div><div class="line">                <span class="keyword">this</span>.rollbackOnException(status, var5);</div><div class="line">                <span class="keyword">throw</span> var5;</div><div class="line">            &#125; <span class="keyword">catch</span> (Throwable var6) &#123;</div><div class="line">                <span class="comment">//事务回滚</span></div><div class="line">                <span class="keyword">this</span>.rollbackOnException(status, var6);</div><div class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> UndeclaredThrowableException(var6, <span class="string">"TransactionCallback threw undeclared checked exception"</span>);</div><div class="line">            &#125;</div><div class="line">			<span class="comment">//事务提交</span></div><div class="line">            <span class="keyword">this</span>.transactionManager.commit(status);</div><div class="line">            <span class="keyword">return</span> result;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">    </div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h3><blockquote>
+<p><a href="https://www.javazhiyin.com/35501.html" target="_blank" rel="external">https://www.javazhiyin.com/35501.html</a></p>
+<p><a href="https://www.jianshu.com/p/1bfa61868823" target="_blank" rel="external">https://www.jianshu.com/p/1bfa61868823</a></p>
+<p><a href="https://www.cnblogs.com/dennyzhangdd/p/9602673.html" target="_blank" rel="external">https://www.cnblogs.com/dennyzhangdd/p/9602673.html</a></p>
+</blockquote>
+</contents>
+      
+    </div>
+    
+  </div>
+  
+    
+    <div class="copyright">
+        <p><span>本文标题:</span><a href="/2019/08/12/SpringBoot事务解析/">SpringBoot事务解析</a></p>
+        <p><span>文章作者:</span><a href="/" title="回到主页">min peng</a></p>
+        <p><span>发布时间:</span>2019-08-12, 20:55:49</p>
+        <p><span>最后更新:</span>2019-08-12, 21:06:15</p>
+        <p>
+            <span>原始链接:</span><a class="post-url" href="/2019/08/12/SpringBoot事务解析/" title="SpringBoot事务解析">https://minpeng.github.io/2019/08/12/SpringBoot事务解析/</a>
+            <span class="copy-path" data-clipboard-text="原文: https://minpeng.github.io/2019/08/12/SpringBoot事务解析/　　作者: min peng" title="点击复制文章链接"><i class="fa fa-clipboard"></i></span>
+            <script> var clipboard = new Clipboard('.copy-path'); </script>
+        </p>
+        <p>
+            <span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
+        </p>
+    </div>
+
+
+
+    <nav id="article-nav">
+        
+            <div id="article-nav-newer" class="article-nav-title">
+                <a href="/2019/08/12/SpringBoot-WebSocket使用/">
+                    SpringBoot WebSocket使用
+                </a>
+            </div>
+        
+        
+            <div id="article-nav-older" class="article-nav-title">
+                <a href="/2018/07/22/记两年工作总结/">
+                    记两年工作总结
+                </a>
+            </div>
+        
+    </nav>
+
+  
+</article>
+
+    <div id="toc" class="toc-article">
+        <strong class="toc-title">文章目录</strong>
+        
+            <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#SpringBoot事务详解"><span class="toc-number">1.</span> <span class="toc-text">SpringBoot事务详解</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-spring事务猜想"><span class="toc-number">1.1.</span> <span class="toc-text">1.spring事务猜想</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-spring注解-transactional"><span class="toc-number">1.1.1.</span> <span class="toc-text">2.spring注解@transactional</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-spring执行-transactional"><span class="toc-number">1.1.2.</span> <span class="toc-text">3.spring执行@transactional</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-spring事务常量"><span class="toc-number">1.2.</span> <span class="toc-text">4.spring事务常量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-spring事务管理接口"><span class="toc-number">1.3.</span> <span class="toc-text">5. spring事务管理接口</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-事务状态TransactionStatus"><span class="toc-number">1.4.</span> <span class="toc-text">6.事务状态TransactionStatus</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#7-spring事务管理实现类-AbstractPlatformTransactionManager"><span class="toc-number">1.5.</span> <span class="toc-text">7.spring事务管理实现类 -AbstractPlatformTransactionManager</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#8-spring事务管理模板方法"><span class="toc-number">1.6.</span> <span class="toc-text">8.spring事务管理模板方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#参考链接"><span class="toc-number">1.7.</span> <span class="toc-text">参考链接</span></a></li></ol></li></ol>
+        
+    </div>
+    <style>
+        .left-col .switch-btn,
+        .left-col .switch-area {
+            display: none;
+        }
+        .toc-level-3 i,
+        .toc-level-3 ol {
+            display: none !important;
+        }
+    </style>
+
+    <input type="button" id="tocButton" value="隐藏目录"  title="点击按钮隐藏或者显示文章目录">
+
+    <script>
+        yiliaConfig.toc = ["隐藏目录", "显示目录", !!"false"];
+    </script>
+
+
+
+    
+<div class="share">
+    
+        <div class="bdsharebuttonbox">
+            <a href="#" class="fa fa-twitter bds_twi" data-cmd="twi" title="分享到推特"></a>
+            <a href="#" class="fa fa-weibo bds_tsina" data-cmd="tsina" title="分享到新浪微博"></a>
+            <a href="#" class="fa fa-qq bds_sqq" data-cmd="sqq" title="分享给 QQ 好友"></a>
+            <a href="#" class="fa fa-files-o bds_copy" data-cmd="copy" title="复制网址"></a>
+            <a href="#" class="fa fa fa-envelope-o bds_mail" data-cmd="mail" title="通过邮件分享"></a>
+            <a href="#" class="fa fa-weixin bds_weixin" data-cmd="weixin" title="生成文章二维码"></a>
+            <a href="#" class="fa fa-share-alt bds_more" data-cmd="more"></i></a>
+        </div>
+        <script>
+            window._bd_share_config={
+                "common":{"bdSnsKey":{},"bdText":"SpringBoot事务解析　| Pengm　","bdMini":"2","bdMiniList":false,"bdPic":"","bdStyle":"0","bdSize":"24"},"share":{}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+        </script>
+    
+
+    
+</div>
+
+
+
+
+
+
+
+    
+      <!-- 来必力City版安装代码 -->
+	<div id="lv-container" data-id="city"  data-uid="MTAyMC8yODg4MS81NDUx">
+		<script type="text/javascript">
+	   (function(d, s) {
+		   var j, e = d.getElementsByTagName(s)[0];
+
+		   if (typeof LivereTower === 'function') { return; }
+
+		   j = d.createElement(s);
+		   j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+		   j.async = true;
+
+		   e.parentNode.insertBefore(j, e);
+	   })(document, 'script');
+		</script>
+	<noscript> 为正常使用来必力评论功能请激活JavaScript</noscript>
+	</div>
+	<!-- City版安装代码已完成 -->
+
+    
+
+
+
+
+    <div class="scroll" id="post-nav-button">
+        
+            <a href="/2019/08/12/SpringBoot-WebSocket使用/" title="上一篇: SpringBoot WebSocket使用">
+                <i class="fa fa-angle-left"></i>
+            </a>
+        
+
+        <a title="文章列表"><i class="fa fa-bars"></i><i class="fa fa-times"></i></a>
+
+        
+            <a href="/2018/07/22/记两年工作总结/" title="下一篇: 记两年工作总结">
+                <i class="fa fa-angle-right"></i>
+            </a>
+        
+    </div>
+
+    <ul class="post-list"><li class="post-list-item"><a class="post-list-link" href="/2019/08/12/quill富文本编辑器自定义上传图片/">quill富文本编辑器自定义上传图片</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/08/12/SpringBoot-WebSocket使用/">SpringBoot WebSocket使用</a></li><li class="post-list-item"><a class="post-list-link" href="/2019/08/12/SpringBoot事务解析/">SpringBoot事务解析</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/07/22/记两年工作总结/">记两年工作总结</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/06/22/读书笔记-疯狂Java/">读书笔记-疯狂Java</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/22/读书笔记-大型网站技术架构/">读书笔记-大型网站技术架构</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/05/22/shiro权限控制/">shiro权限控制</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/04/22/jdbc原生api批量插入数据库/">jdbc原生api批量插入数据库</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/03/22/序列化拷贝对象/">序列化拷贝对象</a></li><li class="post-list-item"><a class="post-list-link" href="/2018/01/22/spring-memcache缓存注解配置/">spring+memcache缓存注解配置</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/java数字转换/">java数字转换</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/16/一年工作之感悟/">一年工作之感悟</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/09/Spring框架简单异步发送邮件/">Spring框架简单异步发送邮件</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/07/09/Mysql优化/">Mysql优化</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/05/29/linux/">Linux 生疏命令</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/04/03/Scrapy-xinmin/">Scrapy爬取新民网</a></li><li class="post-list-item"><a class="post-list-link" href="/2017/03/03/java-demo/">java代码审查</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/23/StudySpark/">学习scala和spark的一些内容</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/17/我的第一篇博客/">我的第一篇博客：HBase</a></li><li class="post-list-item"><a class="post-list-link" href="/2016/12/16/hello-world/">Hello World</a></li></ul>
+
+
+
+
+    <script>
+        
+    </script>
+</div>
+      <footer id="footer">
+    <div class="outer">
+        <div id="footer-info">
+            <div class="footer-left">
+                <i class="fa fa-copyright"></i> 
+                2016-2019 min peng
+            </div>
+            <div class="footer-right">
+                <a href="http://hexo.io/" target="_blank" title="快速、简洁且高效的博客框架">Hexo</a>  Theme <a href="https://github.com/MOxFIVE/hexo-theme-yelee" target="_blank" title="简而不减 Hexo 双栏博客主题  v3.5">Yelee</a> by MOxFIVE <i class="fa fa-heart animated infinite pulse"></i>
+            </div>
+        </div>
+        
+            <div class="visit">
+                
+                    <span id="busuanzi_container_site_pv" style='display:none'>
+                        <span id="site-visit" title="本站到访数"><i class="fa fa-user" aria-hidden="true"></i><span id="busuanzi_value_site_uv"></span>
+                        </span>
+                    </span>
+                
+                
+                    <span>| </span>
+                
+                
+                    <span id="busuanzi_container_page_pv" style='display:none'>
+                        <span id="page-visit"  title="本页阅读量"><i class="fa fa-eye animated infinite pulse" aria-hidden="true"></i><span id="busuanzi_value_page_pv"></span>
+                        </span>
+                    </span>
+                
+            </div>
+        
+    </div>
+</footer>
+
+    </div>
+    
+<script data-main="/js/main.js" src="//cdn.bootcss.com/require.js/2.2.0/require.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            var iPad = window.navigator.userAgent.indexOf('iPad');
+            if (iPad > -1 || $(".left-col").css("display") === "none") {
+                var bgColorList = ["#9db3f4", "#414141", "#e5a859", "#f5dfc6", "#c084a0", "#847e72", "#cd8390", "#996731"];
+                var bgColor = Math.ceil(Math.random() * (bgColorList.length - 1));
+                $("body").css({"background-color": bgColorList[bgColor], "background-size": "cover"});
+            }
+            else {
+                var backgroundnum = 5;
+                var backgroundimg = "url(/background/bg-x.jpg)".replace(/x/gi, Math.ceil(Math.random() * backgroundnum));
+                $("body").css({"background": backgroundimg, "background-attachment": "fixed", "background-size": "cover"});
+            }
+        })
+    </script>
+
+
+
+
+
+<div class="scroll" id="scroll">
+    <a href="#" title="返回顶部"><i class="fa fa-arrow-up"></i></a>
+    <a href="#comments" onclick="load$hide();" title="查看评论"><i class="fa fa-comments-o"></i></a>
+    <a href="#footer" title="转到底部"><i class="fa fa-arrow-down"></i></a>
+</div>
+<script>
+    // Open in New Window
+    
+        var oOpenInNew = {
+            
+             title: "a.article-title, .article-more-link a", 
+            
+             tags: ".article-tag a", 
+             categories: ".article-category a, a.tag-list-link", 
+             articleNav: "#article-nav a, #post-nav-button a", 
+             archives: ".archive-article-title", 
+             miniArchives: "a.post-list-link", 
+            
+             friends: "#js-friends a", 
+             socail: ".social a" 
+        }
+        for (var x in oOpenInNew) {
+            $(oOpenInNew[x]).attr("target", "_blank");
+        }
+    
+</script>
+
+<script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+</script>
+  </div>
+</body>
+</html>
