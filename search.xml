@@ -962,26 +962,26 @@
   
     
     <entry>
-      <title><![CDATA[about me]]></title>
-      <url>/about/index.html</url>
-      <content type="html"><![CDATA[<h2 id="爱打篮球的不宅技术大男孩"><a href="#爱打篮球的不宅技术大男孩" class="headerlink" title="爱打篮球的不宅技术大男孩"></a>爱打篮球的不宅技术大男孩</h2>]]></content>
-    </entry>
-    
-    <entry>
       <title><![CDATA[归档]]></title>
       <url>/archive/index.html</url>
       <content type="html"></content>
     </entry>
     
     <entry>
-      <title><![CDATA[tags]]></title>
-      <url>/tags/index.html</url>
-      <content type="html"></content>
+      <title><![CDATA[about me]]></title>
+      <url>/about/index.html</url>
+      <content type="html"><![CDATA[<h2 id="爱打篮球的不宅技术大男孩"><a href="#爱打篮球的不宅技术大男孩" class="headerlink" title="爱打篮球的不宅技术大男孩"></a>爱打篮球的不宅技术大男孩</h2>]]></content>
     </entry>
     
     <entry>
       <title><![CDATA[categories]]></title>
       <url>/categories/index.html</url>
+      <content type="html"></content>
+    </entry>
+    
+    <entry>
+      <title><![CDATA[tags]]></title>
+      <url>/tags/index.html</url>
       <content type="html"></content>
     </entry>
     
