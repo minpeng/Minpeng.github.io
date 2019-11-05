@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://minpeng.github.io/"/>
-  <updated>2019-08-24T08:25:45.065Z</updated>
+  <updated>2019-11-05T14:40:41.296Z</updated>
   <id>https://minpeng.github.io/</id>
   
   <author>
@@ -14,6 +14,210 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>git使用指南</title>
+    <link href="https://minpeng.github.io/2019/11/05/git%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"/>
+    <id>https://minpeng.github.io/2019/11/05/git使用指南/</id>
+    <published>2019-11-05T14:38:12.000Z</published>
+    <updated>2019-11-05T14:40:41.296Z</updated>
+    
+    <content type="html"><![CDATA[<contents>
+
+<h2 id="git-使用指南"><a href="#git-使用指南" class="headerlink" title="git 使用指南"></a>git 使用指南</h2><h3 id="git-介绍"><a href="#git-介绍" class="headerlink" title="git 介绍"></a>git 介绍</h3><blockquote>
+<p>C 语言编写的一个分布式版本控制系统</p>
+</blockquote>
+<ol>
+<li>git 工作原理</li>
+</ol>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcubXVrZXdhbmcuY29tLzU5YzMxZTQ0MDAwMTNiYzkxMTcyMDM0MC5wbmc?x-oss-process=image/format,png" alt="avatar"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">Workspace：工作区</div><div class="line">Index / Stage：暂存区</div><div class="line">Repository：仓库区（或本地仓库）</div><div class="line">Remote：远程仓库</div></pre></td></tr></table></figure>
+<p>2.git 和 svn 区别</p>
+<ul>
+<li>svn 集中式</li>
+</ul>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cubGlhb3h1ZWZlbmcuY29tL2ZpbGVzL2F0dGFjaG1lbnRzLzkxODkyMTU0MDM1NTg3Mi8w?x-oss-process=image/format,png" alt="avatar"></p>
+<ul>
+<li>git 分布式</li>
+</ul>
+<p><img src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly93d3cubGlhb3h1ZWZlbmcuY29tL2ZpbGVzL2F0dGFjaG1lbnRzLzkxODkyMTU2MjIzNjE2MC8w?x-oss-process=image/format,png" alt="avatar"></p>
+<blockquote>
+<p>为什么说 git 是分布式的</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">这里的“分布式”是相对于“集中式”来说的。把数据集中保存在服务器节点，所有的客户节点都从服务节点获取数据的版本控制系统叫做集中式版本控制系统，比如svn就是典型的集中式版本控制系统。</div><div class="line"></div><div class="line">与之相对，git的数据不止保存在服务器上，同时也完整的保存在本地计算机上，所以我们称git为分布式版本控制系统。</div><div class="line"></div><div class="line">git的这种特性带来许多便利，比如你可以在完全离线的情况下使用git，随时随地提交项目更新，而且你不必为单点故障过分担心，即使服务器宕机或数据损毁，也可以用任何一个节点上的数据恢复项目，因为每一个开发节点都保存着完整的项目文件镜像。</div></pre></td></tr></table></figure>
+<blockquote>
+<p>git 和 svn 差异对比</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">差异点</th>
+<th style="text-align:left">svn</th>
+<th style="text-align:left">git</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">系统特点</td>
+<td style="text-align:left">1.集中式版本控制系统（文档管理很方便) <br> 2.企业内部并行集中开发 <br>3.windows 系统上开发推荐使用<br>4.克隆一个拥有将近一万个提交(commit),五个分支,每个分支有大约 1500 个文件，用时将近一个小时</td>
+<td style="text-align:left">1.分布式系统（代码管理很方便）<br>2.开源项目开发<br>3.mac,Linux 系统上开发推荐使用<br>4.克隆一个拥有将近一万个提交(commit),五个分支,每个分支有大约 1500 个文件，用时 1 分钟</td>
+</tr>
+<tr>
+<td style="text-align:left">灵活性</td>
+<td style="text-align:left">1.搭载 svn 的服务器出现故障，无法与之交互<br>2.所有的 svn 操作都需要中央仓库交互（例：拉分支，看日志等）</td>
+<td style="text-align:left">1.可以单机操作，git 服务器故障也可以在本地 git 仓库工作<br>2.除了 push 和 pull（或 fetch）操作，其他都可以在本地操作<br>3.根据自己开发任务任意在本地创建分支 4.日志都是在本地查看，效率较高</td>
+</tr>
+<tr>
+<td style="text-align:left">安全性</td>
+<td style="text-align:left">较差，定期备份，并且是整个 svn 都得备份</td>
+<td style="text-align:left">较高，每个开发者的本地就是一套完整版本库，记录着版本库的所有信息（gitlab 集成了备份功能）</td>
+</tr>
+<tr>
+<td style="text-align:left">分支方面</td>
+<td style="text-align:left">1.拉分支更像是 copy 一个路径<br>2.可针对任何子目录进行 branch<br>3.拉分支的时间较慢，因为拉分支相当于 copy<br>4.创建完分支后，影响全部成员，每个人都会拥有这个分支<br>5.多分支并行开发较重（工作较多而且繁琐）</td>
+<td style="text-align:left">1.我可以在 Git 的任意一个提交点（commit point）开启分支！（git checkout -b newbranch HashId）<br>2.拉分支时间较快，因为拉分支只是创建文件的指针和 HEAD<br>3.自己本地创建的分支不会影响其他人<br>4.比较适合多分支并行开发<br>5.git checkout hash 值(切回之前的版本，无需版本回退)</td>
+</tr>
+<tr>
+<td style="text-align:left">版本控制</td>
+<td style="text-align:left">1.保存前后变化的差异数据，作为版本控制<br>2.版本号进行控制，每次操作都会产生一个高版本号（svn 的全局版本号，这是 svn 一个较大的特点，git 是 hash 值）</td>
+<td style="text-align:left">1.git 只关心文件数据的整体发生变化，更像是把文件做快照，文件没有改变时，分支只想这个文件的指针不会改变，文件发生改变，指针指向新版本<br>\2. 40 位长的哈希值作为版本号，没有先后之分</td>
+</tr>
+<tr>
+<td style="text-align:left">工作流程</td>
+<td style="text-align:left">1.每次更改文件之前都得 update 操作，有的时候修改过程中这个文件有更新，commit 不会成功<br>2.有冲突，会打断提交动作（冲突解决是一个提交速度的竞赛：手快者，先提交，平安无事；手慢者，后提交，可能遇到麻烦的冲突解决。）</td>
+<td style="text-align:left">1.开始工作前进行 fetch 操作，完成开发工作后 push 操作，有冲突解决冲突<br>2.git 的提交过程不会被打断，有冲突会标记冲突文件</td>
+</tr>
+<tr>
+<td style="text-align:left">学习成本</td>
+<td style="text-align:left">使用起来更方便，svn 对中文支持好，操作简单，适用于大众</td>
+<td style="text-align:left">更在乎效率而不是易用性，成本较高（有很多独有的命令，rebase，远程仓库交互的命令，等等）</td>
+</tr>
+<tr>
+<td style="text-align:left">权限管理</td>
+<td style="text-align:left">svn 的权限管理相当严格，可以按组、个人针对某个子目录的权限控制（每个目录下都会有个.svn 的隐藏文件）</td>
+<td style="text-align:left">git 没有严格的权限管理控制，只有账号角色划分</td>
+</tr>
+</tbody>
+</table>
+<h3 id="git-常用命令"><a href="#git-常用命令" class="headerlink" title="git 常用命令"></a>git 常用命令</h3><ol>
+<li>初始化一个 git 仓库：git init</li>
+<li>克隆仓库：git clone <url></url></li>
+<li>添加文件（提交到缓存区）：git add <file></file></li>
+<li>提交文件（提交到 HEAD）：git commit -m <message></message></li>
+<li>推送改动(提交到远程仓库)：git push orgin <branch_name></branch_name></li>
+<li>查看 git 仓库状态：git status</li>
+<li>查看修改内容：git diff</li>
+<li>查看提交日志：git log</li>
+<li>回复版本：git reset –hard <commit_id></commit_id></li>
+<li>创建分支：git branch <branch_name></branch_name></li>
+<li>切换分支: git check <branch_name> /git switch <branch_name></branch_name></branch_name></li>
+<li>查看分支：git branch</li>
+<li>合并分支：git merge <branch_name></branch_name></li>
+<li>删除分支：git branch -d <branch_name></branch_name></li>
+<li>查看远程库信息：git remore -v</li>
+<li>显示标签：git tag</li>
+<li>新建标签：git tag <tag_name></tag_name></li>
+<li>新建带备注的标签：git tag -a <tag_name> -m <tag_message></tag_message></tag_name></li>
+<li>给某个 commit 答标签：git tag -a <tag_name> <commit_id> -m <tag_message></tag_message></commit_id></tag_name></li>
+</ol>
+<h3 id="tag-和-branche-的区别"><a href="#tag-和-branche-的区别" class="headerlink" title="tag 和 branche 的区别"></a>tag 和 branche 的区别</h3><ul>
+<li><p>tag 对应某次 commit, 是一个点，是不可移动的（类似里程碑）</p>
+</li>
+<li><p>branch 对应一系列 commit，是很多点连成的一根线，有一个 HEAD 指针，是可以依靠 HEAD 指针移动的</p>
+</li>
+</ul>
+<blockquote>
+<p>git 有 commit，为什么还要引入 tag？</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"></div><div class="line">&quot;请把上周一的那个版本打包发布，commit号是6a5819e…&quot;</div><div class="line"></div><div class="line">&quot;一串乱七八糟的数字不好找！&quot;</div><div class="line"></div><div class="line">如果换一个办法：</div><div class="line"></div><div class="line">&quot;请把上周一的那个版本打包发布，版本号是v1.2&quot;</div><div class="line"></div><div class="line">&quot;好的，按照tag v1.2查找commit就行！&quot;</div><div class="line"></div><div class="line">所以，tag就是一个让人容易记住的有意义的名字，它跟某个commit绑在一起。</div></pre></td></tr></table></figure>
+<h3 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">1.对代码进行修改</div><div class="line">2.完成了某项功能，提交（commit，只是提交到本地代码库），1-2可以反复进行，直到觉得可以推送到服务器上时，执行3</div><div class="line">3.拉取（pull，或者用获取 fetch 然后再手动合并 merge）</div><div class="line">4.如果存在冲突，解决冲突</div><div class="line">5.推送（push），将数据提交到服务器上的代码库</div></pre></td></tr></table></figure>
+<h3 id="Eclipse-使用-git"><a href="#Eclipse-使用-git" class="headerlink" title="Eclipse 使用 git"></a>Eclipse 使用 git</h3><blockquote>
+<p>右键-&gt;team</p>
+</blockquote>
+<ul>
+<li><p>commit</p>
+<p><img src="https://minpeng.github.io//image/eclipse/commit.png" alt="commit"></p>
+<p><img src="https://minpeng.github.io//image/eclipse/commit-info.png" alt="commit"></p>
+</li>
+<li><p>push</p>
+<p><img src="https://minpeng.github.io//image/eclipse/push.png" alt="commit"></p>
+</li>
+<li><p>pull</p>
+<p><img src="https://minpeng.github.io//image/eclipse/pull.png" alt="pull"></p>
+</li>
+<li><p>分支</p>
+<p><img src="https://minpeng.github.io//image/eclipse/branch.png" alt="branch"></p>
+</li>
+<li><p>合并</p>
+<p><img src="https://minpeng.github.io//image/eclipse/merage.png" alt="merage"></p>
+</li>
+</ul>
+<h3 id="idea-使用-git"><a href="#idea-使用-git" class="headerlink" title="idea 使用 git"></a>idea 使用 git</h3><ul>
+<li><p>commit</p>
+<p><img src="https://minpeng.github.io//image/idea/commit.png" alt="commit"></p>
+<p><img src="https://minpeng.github.io//image/idea/commit-info.png" alt="commit"></p>
+</li>
+<li><p>push/pull</p>
+<p><img src="https://minpeng.github.io//image/idea/pull-push.png" alt="commit"></p>
+<p><img src="https://minpeng.github.io//image/idea/pull-push2.png" alt="commit"></p>
+</li>
+<li><p>分支</p>
+<p><img src="https://minpeng.github.io//image/idea/branch1.png" alt="branch1"></p>
+<p><img src="https://minpeng.github.io//image/idea/branch2.png" alt="branch1"></p>
+</li>
+<li><p>合并分支</p>
+<p><img src="https://minpeng.github.io//image/idea/branchMerge.png" alt="branch1"></p>
+</li>
+<li><p>解决冲突</p>
+<p><img src="https://minpeng.github.io//image/idea/conflict.png" alt="branch1"></p>
+</li>
+</ul>
+<h3 id="gitlab-项目管理"><a href="#gitlab-项目管理" class="headerlink" title="gitlab 项目管理"></a>gitlab 项目管理</h3><ol>
+<li><p>创建项目组</p>
+<p><img src="https://minpeng.github.io//image/gitlab/create-group.png" alt="创建项目组"></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">私有库：只有被赋予权限的用户可见</div><div class="line">内部库：登录用户可以下载</div><div class="line">公开库：所有人可以下载</div></pre></td></tr></table></figure>
+</li>
+<li><p>添加项目组成员</p>
+</li>
+</ol>
+<p><img src="https://minpeng.github.io//image/gitlab/add-members.png" alt="添加项目组成员"></p>
+<ol>
+<li><p>创建项目</p>
+<p><img src="https://minpeng.github.io//image/gitlab/create-project.png" alt="创建项目"></p>
+</li>
+<li><p>添加项目成员</p>
+<p><img src="https://minpeng.github.io//image/gitlab/add-project-members.png" alt="添加项目成员"></p>
+</li>
+</ol>
+<p>5) <strong>设置人员</strong></p>
+<blockquote>
+<p>人员权限</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">Guest(游客):可以创建issue、发表评论，不能读写版本库</div><div class="line">Reporter(记者):可以克隆代码，不能提交</div><div class="line">Developer(开发者):可以克隆代码、开发、提交、push</div><div class="line">Master(主要维护者):可以创建项目、添加tag、保护分支、添加项目成员、编辑项目</div><div class="line">Owner(所属者):可以设置项目访问权限 - Visibility Level、删除项目、迁移项目、管理组成员</div></pre></td></tr></table></figure>
+<blockquote>
+<p>具体可看 <a href="https://docs.gitlab.com/ee/user/permissions.html" target="_blank" rel="external">https://docs.gitlab.com/ee/user/permissions.html</a></p>
+</blockquote>
+<h3 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h3><blockquote>
+<p><a href="https://www.liaoxuefeng.com/wiki/896043488029600" target="_blank" rel="external">https://www.liaoxuefeng.com/wiki/896043488029600</a></p>
+<p><a href="https://juejin.im/entry/5b1faf61f265da6e5b7635b6" target="_blank" rel="external">https://juejin.im/entry/5b1faf61f265da6e5b7635b6</a></p>
+<p><a href="https://www.bootcss.com/p/git-guide/" target="_blank" rel="external">https://www.bootcss.com/p/git-guide/</a></p>
+</blockquote>
+</contents>]]></content>
+    
+    <summary type="html">
+    
+      git使用指南
+    
+    </summary>
+    
+      <category term="git" scheme="https://minpeng.github.io/categories/git/"/>
+    
+    
+      <category term="git" scheme="https://minpeng.github.io/tags/git/"/>
+    
+      <category term="angular" scheme="https://minpeng.github.io/tags/angular/"/>
+    
+  </entry>
   
   <entry>
     <title>SpringBoot自定义配置文件区分环境</title>
@@ -106,9 +310,9 @@
       <category term="前端" scheme="https://minpeng.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
     
     
-      <category term="quill" scheme="https://minpeng.github.io/tags/quill/"/>
-    
       <category term="angular" scheme="https://minpeng.github.io/tags/angular/"/>
+    
+      <category term="quill" scheme="https://minpeng.github.io/tags/quill/"/>
     
   </entry>
   
@@ -985,50 +1189,6 @@
       <category term="spark" scheme="https://minpeng.github.io/tags/spark/"/>
     
       <category term="scala" scheme="https://minpeng.github.io/tags/scala/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>我的第一篇博客：HBase</title>
-    <link href="https://minpeng.github.io/2016/12/17/%E6%88%91%E7%9A%84%E7%AC%AC%E4%B8%80%E7%AF%87%E5%8D%9A%E5%AE%A2/"/>
-    <id>https://minpeng.github.io/2016/12/17/我的第一篇博客/</id>
-    <published>2016-12-17T13:14:15.000Z</published>
-    <updated>2017-07-09T06:54:00.973Z</updated>
-    
-    <content type="html"><![CDATA[<contents>
-
-<p></p><h1>hbase读写过程</h1><p></p>
-<p></p><h4>今天终于用github 和 hexo 在windows的机器上配置成功了。</h4><p></p>
-<p></p><h4>接下来会写一篇搭建过程。</h4><p></p>
-<p></p><p>对于大数据来说，hbase作为nosql数据库中的一种，而且分布式的、面向列的开源数据库。读写速度都比较快。</p><p></p>
-<h1 id="HBase-写数据"><a href="#HBase-写数据" class="headerlink" title="HBase 写数据"></a>HBase 写数据</h1><ol>
-<li>Client写入</li>
-<li>存入MemStore，一直到MemStore满</li>
-<li>Flush成一个StoreFile，直至增长到一定阈值</li>
-<li>触发Compact合并操作</li>
-<li>多个StoreFile合并成一个StoreFile，同时进行版本合并和数据删除</li>
-<li>当StoreFiles Compact后，逐步形成越来越大的StoreFile</li>
-<li>单个StoreFile大小超过一定阈值后，触发Split操作，把当前Region Split成2个Region，Region会下线，新Split出的2个孩子Region会被HMaster分配到相应的HRegionServer上，使得原先1个Region的压力得以分流到2个Region上</li>
-</ol>
-<h4 id="HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I-O高性能。"><a href="#HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I-O高性能。" class="headerlink" title="HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I/O高性能。"></a>HBase只是增加数据，有所得更新和删除操作，都是在Compact阶段做的，所以，用户写操作只需要进入到内存即可立即返回，从而保证I/O高性能。</h4><h5 id="HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。"><a href="#HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。" class="headerlink" title="HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。"></a><li>HStore存储是HBase存储的核心，其中由两部分组成，一部分是MemStore，一部分是StoreFiles。</li></h5><h5 id="HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。"><a href="#HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。" class="headerlink" title="HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。"></a><li>HLog的功能：在分布式系统环境中，无法避免系统出错或者宕机，一旦HRegionServer以外退出，MemStore中的内存数据就会丢失，引入HLog就是防止这种情况。</li></h5><h1 id="HBase-读数据"><a href="#HBase-读数据" class="headerlink" title="HBase 读数据"></a>HBase 读数据</h1><ol>
-<li>client</li>
-<li>zookeeper</li>
-<li>.Root</li>
-<li>.META</li>
-</ol>
-<p>用户数据表zookeeper记录了.ROOT的路径信息（root只有一个region），.ROOT里记录了.META的region信息， （.META可能有多个region），.META里面记录了region的信息。</p>
-</contents>]]></content>
-    
-    <summary type="html">
-    
-      我的第一篇博客：Hbase的相关
-    
-    </summary>
-    
-      <category term="大数据" scheme="https://minpeng.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-      <category term="HBase" scheme="https://minpeng.github.io/tags/HBase/"/>
     
   </entry>
   
