@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://minpeng.github.io/"/>
-  <updated>2019-11-05T14:40:41.296Z</updated>
+  <updated>2019-11-06T12:23:20.798Z</updated>
   <id>https://minpeng.github.io/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="https://minpeng.github.io/2019/11/05/git%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/"/>
     <id>https://minpeng.github.io/2019/11/05/git使用指南/</id>
     <published>2019-11-05T14:38:12.000Z</published>
-    <updated>2019-11-05T14:40:41.296Z</updated>
+    <updated>2019-11-06T12:23:20.798Z</updated>
     
     <content type="html"><![CDATA[<contents>
 
@@ -215,8 +215,6 @@
     
       <category term="git" scheme="https://minpeng.github.io/tags/git/"/>
     
-      <category term="angular" scheme="https://minpeng.github.io/tags/angular/"/>
-    
   </entry>
   
   <entry>
@@ -310,9 +308,9 @@
       <category term="前端" scheme="https://minpeng.github.io/categories/%E5%89%8D%E7%AB%AF/"/>
     
     
-      <category term="angular" scheme="https://minpeng.github.io/tags/angular/"/>
-    
       <category term="quill" scheme="https://minpeng.github.io/tags/quill/"/>
+    
+      <category term="angular" scheme="https://minpeng.github.io/tags/angular/"/>
     
   </entry>
   
