@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://minpeng.github.io/"/>
-  <updated>2019-11-06T12:23:20.798Z</updated>
+  <updated>2020-03-21T11:43:49.794Z</updated>
   <id>https://minpeng.github.io/</id>
   
   <author>
@@ -14,6 +14,34 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>java8Stream常用</title>
+    <link href="https://minpeng.github.io/2020/03/21/java8Stream%E5%B8%B8%E7%94%A8/"/>
+    <id>https://minpeng.github.io/2020/03/21/java8Stream常用/</id>
+    <published>2020-03-21T11:42:39.000Z</published>
+    <updated>2020-03-21T11:43:49.794Z</updated>
+    
+    <content type="html"><![CDATA[<contents>
+
+
+<h2 id="java8Stream常用"><a href="#java8Stream常用" class="headerlink" title="java8Stream常用"></a>java8Stream常用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"><span class="comment">//1.stream某一个元素计数</span></div><div class="line"><span class="keyword">long</span> count = myInfoList.stream().mapToInt(item -&gt; item.getAge()).sum();</div><div class="line">System.out.println(count);</div><div class="line"></div><div class="line"><span class="comment">//2.stream过滤后某一个元素计数</span></div><div class="line"><span class="keyword">long</span> count2 = myInfoList.stream().filter(item -&gt; item.getAge() &gt; <span class="number">21</span>).mapToInt(item -&gt; item.getAge()).sum();</div><div class="line">System.out.println(count2);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">//3.过滤后统计集合大小</span></div><div class="line"><span class="keyword">long</span> count1 = myInfoList.stream().filter(item -&gt; item.getAge() &gt; <span class="number">21</span>).count();</div><div class="line">System.out.println(count1);</div><div class="line"></div><div class="line"><span class="comment">//4.过滤后收集</span></div><div class="line">List&lt;MyInfo&gt; collect = myInfoList.stream().filter(item -&gt; item.getAge() &gt; <span class="number">21</span>).collect(Collectors.toList());</div><div class="line">System.out.println(collect);</div><div class="line"></div><div class="line"><span class="comment">//5.判断是否有该元素</span></div><div class="line"><span class="keyword">boolean</span> flag = myInfoList.stream().anyMatch(item -&gt; item.getName().equals(<span class="string">"pengm1"</span>));</div><div class="line">System.out.println(flag);</div><div class="line"></div><div class="line"><span class="comment">//6.分组</span></div><div class="line">Map&lt;Integer, List&lt;MyInfo&gt;&gt; collect1 = myInfoList.stream().collect(Collectors.groupingBy(item -&gt; item.getAge()));</div><div class="line">System.out.println(collect1);</div><div class="line">Map&lt;Integer, Map&lt;String, List&lt;MyInfo&gt;&gt;&gt; collect2 = myInfoList.stream().collect(Collectors.groupingBy(item -&gt; item.getAge(), Collectors.groupingBy(item -&gt; item.getName())));</div><div class="line">System.out.println(collect2);</div></pre></td></tr></table></figure>
+</contents>]]></content>
+    
+    <summary type="html">
+    
+      java8Stream常用
+    
+    </summary>
+    
+      <category term="java" scheme="https://minpeng.github.io/categories/java/"/>
+    
+    
+      <category term="java" scheme="https://minpeng.github.io/tags/java/"/>
+    
+      <category term="stream" scheme="https://minpeng.github.io/tags/stream/"/>
+    
+  </entry>
   
   <entry>
     <title>git使用指南</title>
@@ -1104,89 +1132,6 @@
     
     
       <category term="java" scheme="https://minpeng.github.io/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>学习scala和spark的一些内容</title>
-    <link href="https://minpeng.github.io/2016/12/23/StudySpark/"/>
-    <id>https://minpeng.github.io/2016/12/23/StudySpark/</id>
-    <published>2016-12-23T13:20:49.000Z</published>
-    <updated>2017-07-09T06:53:18.912Z</updated>
-    
-    <content type="html"><![CDATA[<contents>
-
-<h2 id="scala中的函数一些用法"><a href="#scala中的函数一些用法" class="headerlink" title="scala中的函数一些用法"></a>scala中的函数一些用法</h2><ul>
-<li>trim 开头和结尾的空白忽略</li>
-<li>map 对每一条输入进行指定的操作，然后为每一条输入返回一个对象</li>
-<li>filter 过滤</li>
-</ul>
-<h2 id="scala-特殊符号用法"><a href="#scala-特殊符号用法" class="headerlink" title="scala 特殊符号用法"></a>scala 特殊符号用法</h2><ul>
-<li>::: 三个冒号运算符(list的连接操作)</li>
-<li>:: 两个冒号运算符：表示普通元素与list的连接操作</li>
-<li>_N下划线数字运算符：用于访问元组的第N个元素，N的取值从1开始(元组的元素类型可以不同。)</li>
-<li>&lt;- 用于遍历集合对象</li>
-<li>=&gt; 匿名函数 </li>
-<li>Int =&gt; String表示函数输入为Int型，返回String型，同Function(Int,String) () =&gt; T表示函数没有输入参数，但返回T</li>
-</ul>
-<h2 id="scala中下划线含义"><a href="#scala中下划线含义" class="headerlink" title="scala中下划线含义"></a>scala中下划线含义</h2><ul>
-<li>_ 下划线 有很多含义<br>1.通配符<br>2.匿名函数<br>3.指代集合中的每一个元素。例如筛选列表中大于某个值的元素<br>4.使用模式匹配可以用来获取元组的组员。<blockquote>
-<p>val m = Map(1 -&gt; 2,2 -&gt; 4) for ((k,) &lt;- m) println(k)<br>//只取key,因此在value处用_</p>
-</blockquote>
-</li>
-</ul>
-<p>5.:_* 作为一个整体，告诉编译器你希望将某个参数当作数序列处理。<br>6.+=：为map类型变量添加元素 -=：为map类型变量移除元素及其对应的值</p>
-<h2 id="小括号与大括号"><a href="#小括号与大括号" class="headerlink" title="小括号与大括号"></a>小括号与大括号</h2><ul>
-<li>scala中函数的小括号，可以用花括号来表示，即foo{xx} 与 foo(xx)是一回事儿。</li>
-<li>对于只有一个参数的方法，其小括号是可以省略的，map(lambda)可写为 map lambda，即这块{case 2 =&gt; “OK”}连同花括号整体是一个lambda(函数字面量)。<blockquote>
-<p>// map方法这样写不能编译通过<br>scala&gt; List(2).map( case 2 =&gt; “OK” )<br>// 换做花括号就可以了<br>scala&gt; List(2).map{ case 2 =&gt; “OK” }</p>
-</blockquote>
-</li>
-</ul>
-<h2 id="Option-T"><a href="#Option-T" class="headerlink" title="Option[T]"></a>Option[T]</h2><ul>
-<li>用 Option[T] 来避免 NullPointerException</li>
-<li>Option有两个子类别，Some和None。当程序回传Some的时候，代表这个函式成功地给了你一个String，而你可以透过get()函数拿到那个String，如果程序返回的是None，则代表没有字符串可以给你。<h2 id="reduceLeft-和-reduce"><a href="#reduceLeft-和-reduce" class="headerlink" title="reduceLeft 和 reduce"></a>reduceLeft 和 reduce</h2></li>
-<li>reduceLeft 和 reduceRight 我们可以强制处理元素的方向。（使用 reduce 方向是不被保证的）</li>
-</ul>
-<h2 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h2><ul>
-<li><p>函数和方法一般用def定义；也可以用val定义匿名函数，或者定义函数别名。</p>
-<blockquote>
-<p>def m0(x:Int) = x<em>x<br>val m1 = (x:Int)=&gt; x</em>x // 用(), ()是必须的<br>val m2 = {x:Int=&gt; x*x} // 用{}, {}是必须的</p>
-</blockquote>
-</li>
-<li><p>不需要返回值的函数，可以使用def f() {…}，永远返回Unit（即使使用了return）,即：<br>  def f() {…}  等价于 def f():Unit = {…}</p>
-</li>
-<li><p>需要返回值的函数，用 def f() = {…} 或者 def f = {…}</p>
-</li>
-<li><p>对象的无参数方法的调用，可以省略.和()</p>
-<blockquote>
-<p>“hello world” toUpperCase // “HELLO WORLD”</p>
-</blockquote>
-</li>
-<li><p>匿名函数  ((命名参数列表)=&gt;函数实现)(参数列表)<br>1.无参数： (()=&gt;函数实现)()<br>2.有一个参数且在最后： (函数实现)(参数)<br>3.无返回值： ((命名参数列表)=&gt;Unit)(参数列表)</p>
-</li>
-</ul>
-<h2 id="spark-性能小技巧"><a href="#spark-性能小技巧" class="headerlink" title="spark 性能小技巧"></a>spark 性能小技巧</h2><ul>
-<li>collect() 通常在单元测试中使用.只有当你的整个数据集能在单台机器的内存中放得下时，才能使用collect()，因此，collect() 不能用在大规模数据集上。</li>
-<li>distinct() 操作的开销很大，因为它需要将所有数据通过网络进行混洗（shuffle）</li>
-</ul>
-<h2 id="偏函数"><a href="#偏函数" class="headerlink" title="偏函数"></a>偏函数</h2><ul>
-<li>偏函数：当函数有多个参数，而在使用该函数时不想提供所有参数（比如函数有3个参数），只提供0~2个参数，此时得到的函数便是偏函数。</li>
-</ul>
-</contents>]]></content>
-    
-    <summary type="html">
-    
-      scala和spark的学习
-    
-    </summary>
-    
-      <category term="大数据" scheme="https://minpeng.github.io/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/"/>
-    
-    
-      <category term="spark" scheme="https://minpeng.github.io/tags/spark/"/>
-    
-      <category term="scala" scheme="https://minpeng.github.io/tags/scala/"/>
     
   </entry>
   

@@ -3,6 +3,32 @@
   
     
     <entry>
+      <title><![CDATA[java8Stream常用]]></title>
+      <url>/2020/03/21/java8Stream%E5%B8%B8%E7%94%A8/</url>
+      <content type="html"><![CDATA[<contents>
+
+
+<h2 id="java8Stream常用"><a href="#java8Stream常用" class="headerlink" title="java8Stream常用"></a>java8Stream常用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"></div><div class="line"><span class="comment">//1.stream某一个元素计数</span></div><div class="line"><span class="keyword">long</span> count = myInfoList.stream().mapToInt(item -&gt; item.getAge()).sum();</div><div class="line">System.out.println(count);</div><div class="line"></div><div class="line"><span class="comment">//2.stream过滤后某一个元素计数</span></div><div class="line"><span class="keyword">long</span> count2 = myInfoList.stream().filter(item -&gt; item.getAge() &gt; <span class="number">21</span>).mapToInt(item -&gt; item.getAge()).sum();</div><div class="line">System.out.println(count2);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">//3.过滤后统计集合大小</span></div><div class="line"><span class="keyword">long</span> count1 = myInfoList.stream().filter(item -&gt; item.getAge() &gt; <span class="number">21</span>).count();</div><div class="line">System.out.println(count1);</div><div class="line"></div><div class="line"><span class="comment">//4.过滤后收集</span></div><div class="line">List&lt;MyInfo&gt; collect = myInfoList.stream().filter(item -&gt; item.getAge() &gt; <span class="number">21</span>).collect(Collectors.toList());</div><div class="line">System.out.println(collect);</div><div class="line"></div><div class="line"><span class="comment">//5.判断是否有该元素</span></div><div class="line"><span class="keyword">boolean</span> flag = myInfoList.stream().anyMatch(item -&gt; item.getName().equals(<span class="string">"pengm1"</span>));</div><div class="line">System.out.println(flag);</div><div class="line"></div><div class="line"><span class="comment">//6.分组</span></div><div class="line">Map&lt;Integer, List&lt;MyInfo&gt;&gt; collect1 = myInfoList.stream().collect(Collectors.groupingBy(item -&gt; item.getAge()));</div><div class="line">System.out.println(collect1);</div><div class="line">Map&lt;Integer, Map&lt;String, List&lt;MyInfo&gt;&gt;&gt; collect2 = myInfoList.stream().collect(Collectors.groupingBy(item -&gt; item.getAge(), Collectors.groupingBy(item -&gt; item.getName())));</div><div class="line">System.out.println(collect2);</div></pre></td></tr></table></figure>
+</contents>]]></content>
+      
+        <categories>
+            
+            <category> java </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> java </tag>
+            
+            <tag> stream </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[git使用指南]]></title>
       <url>/2019/11/05/git%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97/</url>
       <content type="html"><![CDATA[<contents>
@@ -1218,14 +1244,14 @@
     </entry>
     
     <entry>
-      <title><![CDATA[categories]]></title>
-      <url>/categories/index.html</url>
+      <title><![CDATA[归档]]></title>
+      <url>/archive/index.html</url>
       <content type="html"></content>
     </entry>
     
     <entry>
-      <title><![CDATA[归档]]></title>
-      <url>/archive/index.html</url>
+      <title><![CDATA[categories]]></title>
+      <url>/categories/index.html</url>
       <content type="html"></content>
     </entry>
     
